@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker http://www.codeandweb.com/texturepacker-->
+<!-- $TexturePacker:SmartUpdate:c9eb1899688f41afe60982c2a523df57:47ae38a461952d0ac54d9737fe5cc190:9adf602f33f5f3c54d6b46190570187b$ -->
+<!--Format:
+n  => name of the sprite
+x  => sprite x pos in texture
+y  => sprite y pos in texture
+w  => sprite width (may be trimmed)
+h  => sprite height (may be trimmed)
+pX => x pos of the pivot point (relative to sprite width)
+pY => y pos of the pivot point (relative to sprite height)
+oX => sprite's x-corner offset (only available if trimmed)
+oY => sprite's y-corner offset (only available if trimmed)
+oW => sprite's original width (only available if trimmed)
+oH => sprite's original height (only available if trimmed)
+r => 'y' only set if sprite is rotated
+-->
+<TextureAtlas imagePath="test" width="256" height="512">
+    <sprite n="1415262085_flat_icons-graficheria.it-01" x="2" y="2" w="128" h="128" pX="0.5" pY="0.5"/>
+    <sprite n="1415262109_flat_icons-graficheria.it-12" x="2" y="132" w="128" h="128" pX="0.5" pY="0.5"/>
+    <sprite n="1415262117_flat_icons-graficheria.it-11" x="2" y="262" w="128" h="128" pX="0.5" pY="0.5"/>
+</TextureAtlas>

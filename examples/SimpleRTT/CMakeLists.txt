@@ -1,0 +1,10 @@
+cmake_minimum_required(VERSION 2.8.4)
+project(SimpleRTT)
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${EXECUTABLE_OUTPUT_PATH}/bin/SimpleRTT")
+
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/assets DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/atlas DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+
+add_executable(simpleRTT simpleRTT.cpp)
+target_link_libraries(simpleRTT LINK_PUBLIC Aergia)

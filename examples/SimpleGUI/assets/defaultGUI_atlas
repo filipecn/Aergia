@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<TextureAtlas imagePath="defaultGUI" width="256" height="512">
+    <sprite n="defaultPushButton_PRESSED" x="2" y="2" w="128" h="128" pX="0.5" pY="0.5"></sprite>
+    <sprite n="defaultPushButton_OUT" x="2" y="132" w="128" h="128" pX="0.5" pY="0.5"></sprite>
+    <sprite n="defaultPushButton_OVER" x="2" y="262" w="128" h="128" pX="0.5" pY="0.5"></sprite>
+</TextureAtlas>
