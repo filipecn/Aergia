@@ -54,6 +54,7 @@ namespace aergia {
 
 					GLuint frameBuffer;
 					GLuint texColorBuffer;
+					GLuint renderBuffer;
 			};
 		}
 	}

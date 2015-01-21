@@ -49,6 +49,8 @@ namespace aergia {
 			class Texture {
 				public:
 					Texture();
+                    Texture(string name, int size, const unsigned char* texels, int channels=3);
+					Texture(string name, int size, const unsigned short* texels, int channels=3);
 					Texture(string name);
 					
 					void apply();

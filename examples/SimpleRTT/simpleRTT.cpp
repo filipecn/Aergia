@@ -18,12 +18,13 @@ GraphicsDisplay* gd;
 FrameBuffer fb;
 
 void render(){
+
 	fb.enable();
-	
-	glClearColor(1,1,1,1);
+
+	glClearColor(0.5,0.5,1,1);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-//	fb.disable();
+	fb.disable();
 }
 
 void buttonClick(int button){
@@ -38,7 +39,7 @@ int main(void){
 	button->registerMouseClickFunc(buttonClick);
 	gd->add(button);
 	
-	fb = FrameBuffer(vec2(800,800));
+	fb = FrameBuffer(vec2(256,256));
 
 	gd->start();
 

@@ -161,7 +161,7 @@ void TextureManager::applyTexture(int id, map<GLuint,GLuint> params){
 		glTexParameteri(GL_TEXTURE_2D, param.first, param.second);
 }
 
-int TextureManager::addTexture(string name, vec3 size, unsigned char* texels){
+unsigned long TextureManager::addTexture(string name, vec3 size, unsigned char* texels){
 	
 	name_id[name] = textures.size();
 	
@@ -173,9 +173,72 @@ int TextureManager::addTexture(string name, vec3 size, unsigned char* texels){
 
 	glBindTexture(GL_TEXTURE_3D, ta.id);
 	
-	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB8, size.x, size.y, size.z, 0, GL_RGB, GL_UNSIGNED_BYTE, texels);
+	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB8, (GLsizei) size.x, (GLsizei) size.y, (GLsizei) size.z, 0, GL_RGB, GL_UNSIGNED_BYTE, texels);
 
 	textures.push_back(ta);
 
 	return textures.size()-1;
+}
+
+unsigned long TextureManager::addTexture(string name, vec2 size, unsigned char* texels){
+
+	name_id[name] = textures.size();
+
+	images[textures.size()] = texels;
+
+	TextureAttributes ta;
+	glGenTextures(1, &ta.id);
+	ta.size = vec3(size.x,size.y,0);
+
+	glBindTexture(GL_TEXTURE_2D, ta.id);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, (GLsizei) size.x, (GLsizei) size.y, 0, GL_RGB, GL_UNSIGNED_BYTE, texels);
+
+	textures.push_back(ta);
+
+	return textures.size()-1;
+}
+
+int TextureManager::addTexture(string name, int size, int channels, const unsigned char *texels) {
+    name_id[name] = textures.size();
+
+    images[textures.size()] = texels;
+
+    TextureAttributes ta;
+    glGenTextures(1, &ta.id);
+    ta.size =  vec3(size,0,0);
+
+    glBindTexture(GL_TEXTURE_1D, ta.id);
+
+    switch(channels){
+        case 1: glTexImage1D(GL_TEXTURE_1D, 0, GL_R8, size, 0, GL_RED, GL_UNSIGNED_BYTE, texels); break;
+        case 3: glTexImage1D(GL_TEXTURE_1D, 0, GL_RGB8, size, 0, GL_RGB, GL_UNSIGNED_BYTE, texels); break;
+        default:break;
+    }
+
+    textures.push_back(ta);
+
+    return (int) (textures.size()-1);
+}
+
+int TextureManager::addTexture(string name, int size, int channels, const unsigned short *texels) {
+	name_id[name] = textures.size();
+
+	images[textures.size()] = (unsigned char const *) texels;
+
+	TextureAttributes ta;
+	glGenTextures(1, &ta.id);
+	ta.size =  vec3(size,0,0);
+
+	glBindTexture(GL_TEXTURE_1D, ta.id);
+
+    switch(channels){
+        case 1: glTexImage1D(GL_TEXTURE_1D, 0, GL_R16, size, 0, GL_RED, GL_UNSIGNED_SHORT, texels); break;
+        case 3: glTexImage1D(GL_TEXTURE_1D, 0, GL_RGBA16, size, 0, GL_RGB, GL_UNSIGNED_SHORT, texels); break;
+        default:break;
+    }
+
+	textures.push_back(ta);
+
+	return (int) (textures.size()-1);
 }

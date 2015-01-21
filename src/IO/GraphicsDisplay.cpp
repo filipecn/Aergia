@@ -132,27 +132,19 @@ void GraphicsDisplay::getMousePos(double &x, double &y){
 
 void GraphicsDisplay::start(){
 	while(!glfwWindowShouldClose(this->window)){
+
 		glfwGetFramebufferSize(window, &this->width, &this->height);
 		glViewport(0, 0, this->width, this->height);
 
 		glClear(GL_COLOR_BUFFER_BIT);
 
+		if(this->renderCallback) {
+			this->renderCallback();
+		}
+		glClearColor(0, 0, 0, 0);
+
 		GUIManager::getInstance().resize(this->width,this->height);
 		GUIManager::getInstance().render();
-		
-		/*this->camera->look();
-
-		  glMatrixMode(GL_MODELVIEW);
-
-		  glLoadIdentity();
-
-		  this->camera->rotate();
-
-
-		*/
-
-		if(this->renderCallback)
-			this->renderCallback();
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

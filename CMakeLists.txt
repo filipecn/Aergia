@@ -6,48 +6,16 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(EXECUTABLE_OUTPUT_PATH "${PROJECT_SOURCE_DIR}/build/")
 set(LIBRARY_OUTPUT_PATH "${PROJECT_SOURCE_DIR}/build/")
 
-set(HEADER_FILES
-    src/Common/Config.h
-    src/Common/Constants.h
-    src/Graphics/Helpers/Grid.h
-    src/Graphics/Helpers/Shapes.h
-    src/Graphics/Rendering/Shader.h
-    src/Graphics/Rendering/ShaderManager.h
-    src/Graphics/Scene/Camera.h
-    src/Graphics/Scene/Scene.h
-    src/Graphics/Scene/SceneManager.h
-    src/Graphics/Scene/SceneObject.h
-    src/Graphics/Scene/TMesh.h
-    src/Graphics/OpenGL.h
-    src/GUI/Elements/Button.h
-    src/GUI/Graphics/GUIUtils.h
-    src/GUI/Graphics/UIGraphic.h
-    src/GUI/Graphics/UIShapes.h
-    src/GUI/UI/InteractionMethod.h
-    src/GUI/UI/Trackball.h
-    src/GUI/UI/TrackballInterface.h
-    src/GUI/UI/TrackMode.h
-    src/GUI/GUI.h
-    src/GUI/GUIManager.h
-    src/IO/Resources/FrameBuffer.h
-    src/IO/Resources/Texture.h
-    src/IO/Resources/TextureAtlas.h
-    src/IO/Resources/TextureManager.h
-    src/IO/DisplayUtils.h
-    src/IO/GraphicsDisplay.h
-    src/IO/InputMap.h
-    src/Math/Line.h
-    src/Math/MathUtils.h
-    src/Math/Plane.h
-    src/Math/Sphere.h
-    src/Math/Transform.h
-    src/Utils/DebugLogger.h
-    src/Aergia.h)
-
 set(SOURCE_FILES
     src/Common/Config.cpp
     src/Common/Config.h
     src/Common/Constants.h
+    src/Common/GLState.cpp
+    src/Common/GLState.h
+    src/Algorithms/Algorithms.h
+    src/Algorithms/MarchingCubes.cpp
+    src/Algorithms/MarchingCubes.h
+    src/Algorithms/MCTables.h
     src/Graphics/Helpers/Grid.cpp
     src/Graphics/Helpers/Grid.h
     src/Graphics/Helpers/Shapes.cpp
@@ -90,8 +58,6 @@ set(SOURCE_FILES
     src/IO/Resources/FrameBuffer.h
     src/IO/Resources/Texture.cpp
     src/IO/Resources/Texture.h
-    src/IO/Resources/TextureAtlas.cpp
-    src/IO/Resources/TextureAtlas.h
     src/IO/Resources/TextureManager.cpp
     src/IO/Resources/TextureManager.h
     src/IO/DisplayUtils.cpp
@@ -113,6 +79,7 @@ set(SOURCE_FILES
     src/Aergia.h)
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
+include_directories(${PROJECT_SOURCE_DIR}/src/Algorithms)
 include_directories(${PROJECT_SOURCE_DIR}/src/IO)
 include_directories(${PROJECT_SOURCE_DIR}/src/IO/Resources)
 include_directories(${PROJECT_SOURCE_DIR}/src/Common)

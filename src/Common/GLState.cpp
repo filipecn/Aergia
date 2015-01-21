@@ -1,9 +1,9 @@
-/* 
- * TextureAtlas.h
+/*
+ * GLState.cpp
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 FilipeCN
+ * Copyright (c) 2015 FilipeCN
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,31 +23,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  *
-*/
+ */
 
-#pragma once
+#include "GLState.h"
+using namespace aergia::common;
 
-#ifndef TEXTUREATLAS_H
-#define TEXTUREATLAS_H
-
-#include <boost/property_tree/xml_parser.hpp>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/foreach.hpp>
-
-#include <string>
+#include <iostream>
 using namespace std;
 
-namespace aergia {
+GLState::GLState(){
 
-	namespace io {
-
-		namespace resources {
-			
-			class TextureAtlas {
-				TextureAtlas(string filename);
-			};
-		}
-	}
 }
 
-#endif
+GLState::~GLState(){
+}

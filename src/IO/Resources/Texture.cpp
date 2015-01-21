@@ -54,3 +54,13 @@ vec4 Texture::getBBox(){
 void Texture::apply(){
 	TextureManager::getInstance().applyTexture(id, parameters);
 }
+
+Texture::Texture(string name, int size, const unsigned char *texels, int channels) {
+	this->name = name;
+	this->id = TextureManager::getInstance().addTexture(name, size, channels, texels);
+}
+
+Texture::Texture(string name, int size, const unsigned short *texels, int channels) {
+    this->name = name;
+    this->id = TextureManager::getInstance().addTexture(name, size, channels, texels);
+}

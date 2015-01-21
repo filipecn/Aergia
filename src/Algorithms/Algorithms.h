@@ -1,9 +1,9 @@
-/* 
- * GUIManager.cpp
+/*
+ * Algorithms.h
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 FilipeCN
+ * Copyright (c) 2015 FilipeCN
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,68 +25,12 @@
  *
 */
 
-#include "GUIManager.h"
+#pragma once
 
-using namespace aergia::gui;
+#ifndef ALGORITHMS_H
+#define ALGORITHMS_H
 
-#include <iostream>
+#include "MCTables.h"
+#include "MarchingCubes.h"
 
-GUIManager::GUIManager(){
-	curGUI = -1;
-}
-
-void GUIManager::add(GUI *gui){
-	if(curGUI < 0){
-		guis.push_back(new GUI());
-		curGUI = 0;
-	}
-
-	guis[curGUI]->add(gui);
-}
-
-void GUIManager::setAnchor(GUI* a){
-	anchor = a;
-	anchor->isAnchor = true;
-}
-
-void GUIManager::removeAnchor(){
-	if(anchor)
-		anchor->isAnchor = false;
-	anchor = NULL;
-}
-
-void GUIManager::render(unsigned int mode){
-	for(auto gui : guis)
-		gui->render();
-}
-
-void GUIManager::resize(double w, double h){
-
-}
-
-void GUIManager::processButton(int button, int action, vec2 p){
-	if(anchor){
-		anchor->processButton(button, action, p);
-		return;
-	}
-	for(auto gui : guis)
-		gui->processButton(button,action,p);
-}
-
-void GUIManager::processMouse(vec2 p){
-	if(anchor){
-		anchor->processMouse(p);
-		return;
-	}
-	for(auto gui : guis)
-		gui->processMouse(p);
-}
-
-void GUIManager::processScroll(vec2 p, vec2 dp){
-	if(anchor){
-		anchor->processScroll(p, dp);
-		return;
-	}
-	for(auto gui : guis)
-		gui->processScroll(p,dp);
-}
+#endif

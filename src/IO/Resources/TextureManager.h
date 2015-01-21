@@ -73,7 +73,10 @@ namespace aergia {
 					bool loadTexture(string filename, string name);
 					bool loadTextureAtlas(string atlas);
 
-					int addTexture(string name, vec3 size, unsigned char* texels);
+					unsigned long addTexture(string name, vec3 size, unsigned char* texels);
+					unsigned long addTexture(string name, vec2 size, unsigned char* texels);
+					int addTexture(string name, int size, int channels, const unsigned char* texels);
+					int addTexture(string name, int size, int channels, const unsigned short* texels);
 
 					vec2 texSize(int id);
 					vec4 texBBox(int id);
@@ -87,9 +90,9 @@ namespace aergia {
 						vec3 size; // size in pixels
 					};
 
-					map<string,int> name_id; // id = index of textures
+					map<string,unsigned long> name_id; // id = index of textures
 					vector<TextureAttributes> textures;
-					map<int,unsigned char*> images;
+					map<int,const unsigned char*> images;
 			};
 
 		}
