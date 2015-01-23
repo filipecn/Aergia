@@ -63,6 +63,7 @@ namespace aergia {
 					}
 
 					int load(const char* name);
+                    int loadFromFiles(char const *name, char const *path);
 
 					int useShader(GLuint program);
 
@@ -88,14 +89,18 @@ namespace aergia {
 					bool init();
 
 					GLuint createProgram(const GLchar*, const GLchar*);
-					int readShader(const char *fileName, char *shaderText);
-					
+					int readShader(const char *fileName, char **shaderText);
+				    GLuint compile(const char* shaderSource, GLuint shaderType);
+                    GLuint createProgram(GLuint objects[], int size);
+
 					// debug
 					int printOglError(const char *file, int line);
 					void printShaderInfoLog(GLuint shader);
 					void printProgramInfoLog(GLuint program);
 					void getGlVersion( int *major, int *minor );
-			};
+
+
+            };
 		}
 	}
 }

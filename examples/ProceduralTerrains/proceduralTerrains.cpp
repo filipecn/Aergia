@@ -19,17 +19,11 @@ using glm::vec3;
 
 GraphicsDisplay* gd;
 
-void render(){
+int width = 100;
+int height = 100;
+int depth = 100;
 
-}
-
-int main(void){
-
-    gd = GraphicsDisplay::create(800, 800, std::string("SimpleRTT"));
-    gd->registerRenderFunc(render);
-
-    gd->start();
-
+void init(){
     // Save Marching Cubes lookup tables to textures
     unsigned short tableData[256*3];
     for (int i = 0; i < 256*3; ++i) {
@@ -55,6 +49,31 @@ int main(void){
         triData[i] = MC::triVert[ind][i%3];
     }
     Texture vtable("vertTable", 512, triData);
+
+    Shader densityShader;
+    densityShader.loadFiles("density", "Shaders");
+}
+
+void render(){
+    static int k = 0;
+    if(!k){
+        GLuint junkVAO;
+        glGenVertexArrays(1, &junkVAO);
+
+        glViewport(0, 0, width, height);
+        glBindVertexArray(junkVAO);
+        glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 3, depth);
+    }
+}
+
+int main(void){
+
+    gd = GraphicsDisplay::create(800, 800, std::string("SimpleRTT"));
+    gd->registerRenderFunc(render);
+
+    init();
+
+    gd->start();
 
     return 0;
 }

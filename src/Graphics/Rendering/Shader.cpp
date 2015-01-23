@@ -46,6 +46,12 @@ bool Shader::set(const char* name){
 	return id != 0;
 }
 
+bool Shader::loadFiles(const char *name, const char *path) {
+    strcpy(this->name, name);
+    id = ShaderManager::getInstance().loadFromFiles(name, path);
+    return false;
+}
+
 bool Shader::start(){
 	int shaderProgram = ShaderManager::getInstance().useShader(id);
 	if(!shaderProgram)
@@ -119,4 +125,5 @@ GLint Shader::getUniLoc(const GLchar *name){
 		return -1;
 	return glGetUniformLocation(shaderProgram, name);
 }
+
 

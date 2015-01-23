@@ -56,6 +56,7 @@ namespace aergia
 					Shader(const char* name);
 
 					bool set(const char* name);
+                    bool loadFiles(const char* name, const char* path);
 
 					bool start();
 					void stop();

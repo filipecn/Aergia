@@ -30,6 +30,9 @@ using namespace aergia::graphics::rendering;
 
 #include <iostream>
 using namespace std;
+#include <GL/gl.h>
+
+using namespace std;
 
 ShaderManager::ShaderManager(){
 	init();
@@ -115,6 +118,32 @@ const char* ShaderManager::getFragmentShaderSource(string f){
 		return NULL;
 	}
 	return it->second;
+}
+
+int ShaderManager::loadFromFiles(const char *name, const char *path){
+    string base(path);
+    if(base[base.length()-1] != '/')
+        base += '/';
+    base += name;
+
+    GLuint objects[] = {0,0,0};
+    string ext[] = {string(".vs"),string(".gs"),string(".fs")};
+    GLuint types[] = {GL_VERTEX_SHADER,GL_GEOMETRY_SHADER,GL_FRAGMENT_SHADER};
+    for (int i = 0; i < 3; ++i) {
+        string file = base + ext[i];
+        char *source = NULL;
+        if(readShader(file.c_str(), &source)) {
+            objects[i] = compile(source, types[i]);
+            free(source);
+        }
+    }
+
+    GLuint program = createProgram(objects, 3);
+    if(!program)
+        return -1;
+    name_program[string(name)] = (unsigned int) programs.size();
+    programs.push_back(program);
+    return (int) (programs.size() - 1);
 }
 
 void ShaderManager::loadDefaultShaders(){
@@ -203,24 +232,24 @@ void ShaderManager::printProgramInfoLog(GLuint program){
 	printOpenGLError();  // Check for OpenGL errors
 }
 
-int ShaderManager::readShader(const char *fileName, char *shaderText){
+int ShaderManager::readShader(const char *fileName, char **shaderText){
 	int count;
-	
-	int fd = open(fileName, O_RDONLY);
+
+    int fd = open(fileName, O_RDONLY);
 	if (fd == -1)
 		return 0;
 
-	int size = lseek(fd, 0, SEEK_END) + 1;
+    size_t size = (size_t) (lseek(fd, 0, SEEK_END) + 1);
 	close(fd);
-	shaderText = new char[size];
+	*shaderText = new char[size];
 
 	FILE *f = fopen(fileName, "r");
 	if(!f)
 		return 0;
 
 	fseek(f, 0, SEEK_SET);
-	count = (int) fread(shaderText, 1, size, f);
-	shaderText[count] = '\0';
+	count = (int) fread(*shaderText, 1, size, f);
+    (*shaderText)[count] = '\0';
 
 	if (ferror(f))
 		count = 0;
@@ -326,4 +355,33 @@ GLuint ShaderManager::createProgram(const GLchar *vertexShaderSource, const GLch
 	return ProgramObject;
 }
 
+GLuint ShaderManager::compile(const char *shaderSource, GLuint shaderType) {
+    GLint  compiled;
+    GLuint shaderObject = glCreateShader(shaderType);
 
+    glShaderSource(shaderObject, 1, &shaderSource, NULL);
+
+    glCompileShader(shaderObject);
+    printOpenGLError();  // Check for OpenGL errors
+    glGetShaderiv(shaderObject, GL_COMPILE_STATUS, &compiled);
+    printShaderInfoLog(shaderObject);
+
+    return shaderObject;
+}
+
+GLuint ShaderManager::createProgram(GLuint objects[], int size) {
+    GLuint programObject = glCreateProgram();
+
+    for (int i = 0; i < size; ++i)
+        if(objects[i])
+            glAttachShader(programObject, objects[i]);
+
+    glLinkProgram(programObject);
+    printOpenGLError();  // Check for OpenGL errors
+    GLint linked;
+    glGetProgramiv(programObject, GL_LINK_STATUS, &linked);
+    printProgramInfoLog(programObject);
+    if (!linked)
+        return 0;
+    return programObject;
+}
