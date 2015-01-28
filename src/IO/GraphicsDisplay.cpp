@@ -131,7 +131,15 @@ void GraphicsDisplay::getMousePos(double &x, double &y){
 }
 
 void GraphicsDisplay::start(){
-	while(!glfwWindowShouldClose(this->window)){
+    while(!glfwWindowShouldClose(this->window)){
+        if(this->renderCallback) {
+            this->renderCallback();
+        }
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+    /*
+    while(!glfwWindowShouldClose(this->window)){
 
 		glfwGetFramebufferSize(window, &this->width, &this->height);
 		glViewport(0, 0, this->width, this->height);
@@ -149,6 +157,7 @@ void GraphicsDisplay::start(){
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
+	*/
 }
 
 void GraphicsDisplay::stop(){

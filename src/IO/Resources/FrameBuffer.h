@@ -34,6 +34,7 @@
 
 #include <glm/glm.hpp>
 using glm::vec2;
+using glm::vec3;
 
 namespace aergia {
 
@@ -45,12 +46,13 @@ namespace aergia {
 				public:
 					FrameBuffer();
 					FrameBuffer(vec2 size);
+					FrameBuffer(vec3 size);
 					~FrameBuffer();
 
 					void enable();
 					void disable();
 					
-					vec2 size;
+					vec3 size;
 
 					GLuint frameBuffer;
 					GLuint texColorBuffer;

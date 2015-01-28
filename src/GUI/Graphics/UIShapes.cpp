@@ -92,10 +92,10 @@ void Rectangle::draw(unsigned int mode){
 
 	texture.apply();
 
-	shader.start();
+    shader.begin();
 	
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ind);
 	glDrawElements(GL_TRIANGLES, this->n_indices, GL_UNSIGNED_INT, 0);
 
-	shader.stop();
+    shader.end();
 }

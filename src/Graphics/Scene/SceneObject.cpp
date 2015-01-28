@@ -73,7 +73,7 @@ bool SceneObject::init(){
 void SceneObject::draw(unsigned int mode){	
 	if(!this->vData || !this->indices || !this->vbo || !this->ind) return;
 	
-	//this->shader.start();
+	//this->shader.begin();
 
 	glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ind);
@@ -83,7 +83,7 @@ void SceneObject::draw(unsigned int mode){
 
 	glDrawElements(elementType, this->n_indices, GL_UNSIGNED_INT, 0);
 
-	//this->shader.stop();
+	//this->shader.end();
 }
 
 void SceneObject::apply(Transform t){}

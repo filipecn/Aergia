@@ -1,9 +1,9 @@
-/* 
- * OpenGL.h
+/*
+ * FluidSimulator.h
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2014 FilipeCN
+ * Copyright (c) 2015 FilipeCN
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,36 +27,50 @@
 
 #pragma once
 
-#ifndef OPENGL_H
-#define OPENGL_H
+#ifndef FLUIDSIMULATOR_H
+#define FLUIDSIMULATOR_H
 
-//#ifndef _STDAFX_H_
-//#define _STDAFX_H_
+#include "OpenGL.h"
+using namespace aergia::gl;
+#include <Shader.h>
+using aergia::graphics::rendering::Shader;
 
-#include <GL/glew.h>
-#include <GL/freeglut.h>
-
-//#endif
-
-#include <cstdio>
-
-#define GL_DEBUG
-
-#ifdef GL_DEBUG
-#define CHECK_GL_ERRORS aergia::gl::printOglError(__FILE__, __LINE__)
-#define CHECK_FRAMEBUFFER aergia::gl::checkFramebuffer()
-#else
-#define CHECK_GL_ERRORS
-#define CHECK_FRAMEBUFFER
-#endif
+#include <glm/glm.hpp>
+using glm::vec2;
+using glm::vec3;
 
 namespace aergia {
 
-    namespace gl {
+    namespace algorithms {
 
-        int printOglError(const char *file, int line);
-        bool checkFramebuffer();
+        class FluidSimulator {
+        public:
+            FluidSimulator();
+
+            ~FluidSimulator();
+
+            bool init(vec2 gridSize);
+            void step();
+            void render();
+
+            vec2 gridSize;
+
+        protected:
+            GLuint fbo, junkVAO;
+            GLuint *src, *dst;
+
+            int curStep;
+
+            GLuint generateTexture(vec3 size);
+            void swap();
+
+            // SHADERS
+            Shader texShader;
+            Shader simpleShader;
+            Shader advectShader;
+        };
+
+
     }
 }
-
 #endif

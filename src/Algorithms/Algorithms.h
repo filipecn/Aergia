@@ -32,5 +32,6 @@
 
 #include "MCTables.h"
 #include "MarchingCubes.h"
+#include "FluidSimulator.h"
 
 #endif

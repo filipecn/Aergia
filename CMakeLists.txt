@@ -16,6 +16,8 @@ set(SOURCE_FILES
     src/Algorithms/MarchingCubes.cpp
     src/Algorithms/MarchingCubes.h
     src/Algorithms/MCTables.h
+    src/Algorithms/FluidSimulator.cpp
+    src/Algorithms/FluidSimulator.h
     src/Graphics/Helpers/Grid.cpp
     src/Graphics/Helpers/Grid.h
     src/Graphics/Helpers/Shapes.cpp
@@ -33,6 +35,7 @@ set(SOURCE_FILES
     src/Graphics/Scene/SceneObject.cpp
     src/Graphics/Scene/SceneObject.h
     src/Graphics/Scene/TMesh.h
+    src/Graphics/OpenGL.cpp
     src/Graphics/OpenGL.h
     src/GUI/Elements/Button.cpp
     src/GUI/Elements/Button.h

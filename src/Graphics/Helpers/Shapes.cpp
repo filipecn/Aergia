@@ -45,12 +45,12 @@ void Rectangle::draw(unsigned int mode){
 	
 	texture.apply();
 
-	shader.start();
+    shader.begin();
 	
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ind);
 	glDrawElements(GL_TRIANGLES, this->n_indices, GL_UNSIGNED_INT, 0);
 
-	shader.stop();
+    shader.end();
 }
 
 Box::Box(vec3 center, vec3 size){
@@ -111,14 +111,14 @@ void Box::draw(unsigned int mode){
 	
 	//texture.apply();
 
-	//shader.start();
+	//shader.begin();
 	glColor3fv(&color[0]);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ind);
 	glEnableVertexAttribArray(0);                                               //ENABLE VERTEX POSITION
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, 0);      // VERTEX POSITION POINTER
 	glDrawElements(GL_TRIANGLES, this->n_indices, GL_UNSIGNED_INT, 0);
 
-	//shader.stop();
+	//shader.end();
 }
 
 

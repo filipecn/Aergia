@@ -44,8 +44,9 @@ FrameBuffer::~FrameBuffer() {
 }
 
 FrameBuffer::FrameBuffer(vec2 size){
-	this->size = size;
+	this->size = vec3(size.x,size.y,0);
 
+	/*
 	glGenTextures(1, &texColorBuffer);
 	glBindTexture(GL_TEXTURE_2D, texColorBuffer);
 
@@ -54,40 +55,73 @@ FrameBuffer::FrameBuffer(vec2 size){
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	GLuint frameBuffer;
+*/
 	glGenFramebuffers(1, &frameBuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
 			GL_TEXTURE_2D, texColorBuffer, 0);
 
-	//renderBuffer = 0;
-	//glGenRenderbuffers(1, &renderBuffer);
-	//glBindRenderbuffer(GL_RENDERBUFFER, renderBuffer);
-	//glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT,
-//			(GLsizei) size.x, (GLsizei) size.y);
-//	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    CHECK_GL_ERRORS;
+    CHECK_FRAMEBUFFER;
 
-	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) !=
-			GL_FRAMEBUFFER_COMPLETE)
-		exit(1);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+FrameBuffer::FrameBuffer(vec3 size){
+    this->size = size;
+
+    glGenFramebuffers(1, &frameBuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+
+    glGenTextures(1, &texColorBuffer);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_3D, texColorBuffer);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB16F, (GLsizei) size.x, (GLsizei) size.y,
+            (GLsizei) size.z, 0, GL_RGB, GL_HALF_FLOAT, NULL);
+
+    CHECK_GL_ERRORS;
+
+    glGenRenderbuffers(1, &renderBuffer);
+    glBindRenderbuffer(GL_RENDERBUFFER, renderBuffer);
+    glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texColorBuffer, 0);
+    //  glFramebufferTextureLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, colorTextureName,
+    //        0, layer);
+
+
+    CHECK_GL_ERRORS;
+    CHECK_FRAMEBUFFER;
+
+    glClearColor(1, 1, 1, 1);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void FrameBuffer::enable(){
 	glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
-	glViewport(0,0, (GLsizei) size.x, (GLsizei) size.y);
-	// frame buffer attach
-	//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-	//		GL_TEXTURE_2D, texColorBuffer, 0);
-	//glBindRenderbuffer(GL_RENDERBUFFER, renderBuffer);
 
 }
 
 void FrameBuffer::disable(){
-	GLubyte pixels[4*4*4];
-	glReadPixels(0, 0, 4, 4, GL_BGRA, GL_UNSIGNED_BYTE, pixels);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_3D, texColorBuffer);
+
+    int w = -1, h = -1, d = -1;
+    glGetTexLevelParameteriv(GL_TEXTURE_3D, 0, GL_TEXTURE_WIDTH, &w);
+    glGetTexLevelParameteriv(GL_TEXTURE_3D, 0, GL_TEXTURE_HEIGHT, &h);
+    glGetTexLevelParameteriv(GL_TEXTURE_3D, 0, GL_TEXTURE_DEPTH, &d);
+    cout << "W " << w << endl;
+    cout << "H " << h << endl;
+    cout << "D " << d << endl;
+    CHECK_GL_ERRORS;
 }
 
 

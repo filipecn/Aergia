@@ -31,6 +31,7 @@
 #define SHADERMANAGER_H
 
 #include <OpenGL.h>
+using namespace aergia::gl;
 #include <Config.h>
 using aergia::common::Config;
 
@@ -50,8 +51,6 @@ namespace aergia {
 	namespace graphics {
 
 		namespace rendering {
-
-#define printOpenGLError() printOglError(__FILE__, __LINE__)
 
 			class ShaderManager {
 				private:
@@ -76,6 +75,10 @@ namespace aergia {
 				private:
 					map<string,GLuint> name_program;
 					map<string,GLuint> name_defaultProgram;
+
+                    map<string,GLuint> name_VO;
+                    map<string,GLuint> name_GO;
+                    map<string,GLuint> name_FO;
 
 					map<string,const char*> vertexShadersSources;
 					map<string,const char*> fragmentShadersSources;

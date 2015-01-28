@@ -58,8 +58,8 @@ namespace aergia
 					bool set(const char* name);
                     bool loadFiles(const char* name, const char* path);
 
-					bool start();
-					void stop();
+					bool begin();
+					void end();
 					
 					int vDataSize;
 					void addVertexAttribute(const char* attribute, int size, int offset);
@@ -70,6 +70,8 @@ namespace aergia
 					void setUniform(const char* name, vec3 v);
 					void setUniform(const char* name, vec2 v);
 					void setUniform(const char* name, int i);
+
+                    bool running;
 
 				protected:
 					char name[100];

@@ -31,6 +31,7 @@ using namespace aergia::graphics::rendering;
 #include <iostream>
 using namespace std;
 #include <GL/gl.h>
+#include <printf.h>
 
 using namespace std;
 
@@ -133,6 +134,7 @@ int ShaderManager::loadFromFiles(const char *name, const char *path){
         string file = base + ext[i];
         char *source = NULL;
         if(readShader(file.c_str(), &source)) {
+            cout << "Compiling " << file << endl;
             objects[i] = compile(source, types[i]);
             free(source);
         }
@@ -180,19 +182,19 @@ void ShaderManager::loadDefaultShaders(){
 
 // Print out the information log for a shader object
 void ShaderManager::printShaderInfoLog(GLuint shader){
-	int infologLength = 0;
+	GLsizei infologLength = 0;
 	int charsWritten  = 0;
 	GLchar *infoLog;
 
-	printOpenGLError();  // Check for OpenGL errors
+    CHECK_GL_ERRORS;
 
 	glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infologLength);
 
-	printOpenGLError();  // Check for OpenGL errors
+    CHECK_GL_ERRORS;
 
 	if (infologLength > 0)
 	{
-		infoLog = (GLchar *)malloc(infologLength);
+		infoLog = (GLchar *)malloc((size_t) infologLength);
 		if (infoLog == NULL)
 		{
 			printf("ERROR: Could not allocate InfoLog buffer\n");
@@ -202,7 +204,7 @@ void ShaderManager::printShaderInfoLog(GLuint shader){
 		printf("Shader InfoLog:\n%s\n\n", infoLog);
 		free(infoLog);
 	}
-	printOpenGLError();  // Check for OpenGL errors
+    CHECK_GL_ERRORS;
 }
 
 // Print out the information log for a program object
@@ -211,11 +213,11 @@ void ShaderManager::printProgramInfoLog(GLuint program){
 	int charsWritten  = 0;
 	GLchar *infoLog;
 
-	printOpenGLError();  // Check for OpenGL errors
+    CHECK_GL_ERRORS;
 
 	glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infologLength);
 
-	printOpenGLError();  // Check for OpenGL errors
+    CHECK_GL_ERRORS;
 
 	if (infologLength > 0)
 	{
@@ -229,7 +231,7 @@ void ShaderManager::printProgramInfoLog(GLuint program){
 		printf("Program InfoLog:\n%s\n\n", infoLog);
 		free(infoLog);
 	}
-	printOpenGLError();  // Check for OpenGL errors
+    CHECK_GL_ERRORS;
 }
 
 int ShaderManager::readShader(const char *fileName, char **shaderText){
@@ -324,7 +326,7 @@ GLuint ShaderManager::createProgram(const GLchar *vertexShaderSource, const GLch
 	// the compiler log file.
 	//
 	glCompileShader(VertexShaderObject);
-	printOpenGLError();  // Check for OpenGL errors
+    CHECK_GL_ERRORS;
 	glGetShaderiv(VertexShaderObject, GL_COMPILE_STATUS, &vertCompiled);
 	printShaderInfoLog(VertexShaderObject);
 	//
@@ -332,7 +334,7 @@ GLuint ShaderManager::createProgram(const GLchar *vertexShaderSource, const GLch
 	// the compiler log file.
 	//
 	glCompileShader(FragmentShaderObject);
-	printOpenGLError();  // Check for OpenGL errors
+    CHECK_GL_ERRORS;
 	glGetShaderiv(FragmentShaderObject, GL_COMPILE_STATUS, &fragCompiled);
 	printShaderInfoLog(FragmentShaderObject);
 	if (!vertCompiled || !fragCompiled)
@@ -347,7 +349,7 @@ GLuint ShaderManager::createProgram(const GLchar *vertexShaderSource, const GLch
 	// Link the program object and print out the info log
 	//
 	glLinkProgram(ProgramObject);
-	printOpenGLError();  // Check for OpenGL errors
+    CHECK_GL_ERRORS;
 	glGetProgramiv(ProgramObject, GL_LINK_STATUS, &linked);
 	printProgramInfoLog(ProgramObject);
 	if (!linked)
@@ -362,7 +364,7 @@ GLuint ShaderManager::compile(const char *shaderSource, GLuint shaderType) {
     glShaderSource(shaderObject, 1, &shaderSource, NULL);
 
     glCompileShader(shaderObject);
-    printOpenGLError();  // Check for OpenGL errors
+    CHECK_GL_ERRORS;
     glGetShaderiv(shaderObject, GL_COMPILE_STATUS, &compiled);
     printShaderInfoLog(shaderObject);
 
@@ -377,7 +379,7 @@ GLuint ShaderManager::createProgram(GLuint objects[], int size) {
             glAttachShader(programObject, objects[i]);
 
     glLinkProgram(programObject);
-    printOpenGLError();  // Check for OpenGL errors
+    CHECK_GL_ERRORS;
     GLint linked;
     glGetProgramiv(programObject, GL_LINK_STATUS, &linked);
     printProgramInfoLog(programObject);

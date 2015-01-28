@@ -33,26 +33,32 @@ using namespace aergia::graphics::rendering;
 using namespace std;
 
 Shader::Shader(){
+    running = false;
 }
 
 Shader::Shader(const char* name){
 	strcpy(this->name, name);
 	id = ShaderManager::getInstance().getProgramID(name);
+    running = false;
 }
 
 bool Shader::set(const char* name){
 	strcpy(this->name, name);
 	id = ShaderManager::getInstance().getProgramID(name);
+    running = false;
 	return id != 0;
 }
 
 bool Shader::loadFiles(const char *name, const char *path) {
     strcpy(this->name, name);
     id = ShaderManager::getInstance().loadFromFiles(name, path);
+    running = false;
     return false;
 }
 
-bool Shader::start(){
+bool Shader::begin(){
+    if(running)
+        return true;
 	int shaderProgram = ShaderManager::getInstance().useShader(id);
 	if(!shaderProgram)
 		return false;
@@ -61,11 +67,13 @@ bool Shader::start(){
 		glEnableVertexAttribArray(attribute);
 		glVertexAttribPointer(attribute, va.size, GL_FLOAT, GL_FALSE, vDataSize * sizeof(GLfloat), (void*)(va.offset * sizeof(GLfloat)));
 	}
+    running = true;
 	return true;
 }
 
-void Shader::stop(){
+void Shader::end(){
 	glUseProgram(0);
+    running = false;
 }
 
 void Shader::addVertexAttribute(const char *attribute, int size, int offset){
@@ -113,10 +121,13 @@ void Shader::setUniform(const char* name, vec2 m){
 }
 
 void Shader::setUniform(const char* name, int i){
+    bool wasNotRunning = !running;
 	GLint loc = getUniLoc(name);
 	if(loc == -1)
 		return;
 	glUniform1i(loc, i);
+    if(wasNotRunning)
+        end();
 }
 
 GLint Shader::getUniLoc(const GLchar *name){
