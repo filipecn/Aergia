@@ -70,6 +70,7 @@ namespace aergia
 					void setUniform(const char* name, vec3 v);
 					void setUniform(const char* name, vec2 v);
 					void setUniform(const char* name, int i);
+					void setUniform(const char* name, float f);
 
                     bool running;
 

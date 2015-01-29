@@ -130,6 +130,16 @@ void Shader::setUniform(const char* name, int i){
         end();
 }
 
+void Shader::setUniform(const char* name, float f){
+    bool wasNotRunning = !running;
+    GLint loc = getUniLoc(name);
+    if(loc == -1)
+        return;
+    glUniform1i(loc, f);
+    if(wasNotRunning)
+        end();
+}
+
 GLint Shader::getUniLoc(const GLchar *name){
 	int shaderProgram = ShaderManager::getInstance().useShader(id);
 	if(!shaderProgram)

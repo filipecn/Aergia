@@ -36,6 +36,8 @@ using namespace aergia::gl;
 using aergia::graphics::rendering::Shader;
 
 #include <glm/glm.hpp>
+#include <GL/gl.h>
+
 using glm::vec2;
 using glm::vec3;
 
@@ -43,13 +45,16 @@ namespace aergia {
 
     namespace algorithms {
 
+        enum cellTypes {FLUID = 0, AIR, SOLID};
+        enum gridTypes {U = 0, V, P, T, GRIDTYPESSIZE};
+
         class FluidSimulator {
         public:
             FluidSimulator();
 
             ~FluidSimulator();
 
-            bool init(vec2 gridSize);
+            bool init(vec2 gridSize, float dx, float dt);
             void step();
             void render();
 
@@ -61,6 +66,9 @@ namespace aergia {
 
             int curStep;
 
+            float timestep;
+            float cellSize;
+
             GLuint generateTexture(vec3 size);
             void swap();
 
@@ -68,6 +76,8 @@ namespace aergia {
             Shader texShader;
             Shader simpleShader;
             Shader advectShader;
+
+            void printGrid(GLuint grid, vec2 size);
         };
 
 

@@ -9,8 +9,6 @@
 #include <string>
 #include <Aergia.h>
 using aergia::io::GraphicsDisplay;
-using aergia::io::resources::FrameBuffer;
-using aergia::gui::Button;
 #include <Algorithms.h>
 using namespace aergia::algorithms;
 #include <glm/glm.hpp>
@@ -23,11 +21,11 @@ using namespace std;
 GraphicsDisplay* gd;
 FluidSimulator s;
 
-int width = 500;
-int height = 500;
+int width = 50;
+int height = 50;
 
 void init(){
-    s.init(vec2(width,height));
+    s.init(vec2(width,height), 0.1, 0.1);
 }
 
 void render(){
