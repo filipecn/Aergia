@@ -114,10 +114,13 @@ void Shader::setUniform(const char* name, vec3 m){
 }
 
 void Shader::setUniform(const char* name, vec2 m){
+    bool wasNotRunning = !running;
 	GLint loc = getUniLoc(name);
 	if(loc == -1)
 		return;
-	glUniform4fv(loc, 1, &m[0]);
+	glUniform2fv(loc, 1, &m[0]);
+    if(wasNotRunning)
+        end();
 }
 
 void Shader::setUniform(const char* name, int i){
@@ -135,7 +138,7 @@ void Shader::setUniform(const char* name, float f){
     GLint loc = getUniLoc(name);
     if(loc == -1)
         return;
-    glUniform1i(loc, f);
+    glUniform1f(loc, f);
     if(wasNotRunning)
         end();
 }

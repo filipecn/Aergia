@@ -46,7 +46,18 @@ namespace aergia {
     namespace algorithms {
 
         enum cellTypes {FLUID = 0, AIR, SOLID};
-        enum gridTypes {U = 0, V, P, T, GRIDTYPESSIZE};
+        enum gridTypes {U = 0, V, P, Q, GRIDTYPESSIZE};
+
+        struct Grid {
+            vec2 offset;
+            GLuint m;
+            vec2 size;
+            GLuint t[2];
+            // GL texture parameters
+            GLint internalFormat;
+            GLenum format;
+            GLenum type;
+        };
 
         class FluidSimulator {
         public:
@@ -55,6 +66,7 @@ namespace aergia {
             ~FluidSimulator();
 
             bool init(vec2 gridSize, float dx, float dt);
+            void setGrid(int i, const GLvoid* data);
             void step();
             void render();
 
@@ -62,14 +74,15 @@ namespace aergia {
 
         protected:
             GLuint fbo, junkVAO;
-            GLuint *src, *dst;
+            int SRC, DST;
+            Grid grids[GRIDTYPESSIZE];
 
             int curStep;
 
-            float timestep;
+            float timeStep;
             float cellSize;
 
-            GLuint generateTexture(vec3 size);
+            void generateGrid(int G, vec2 size, GLint internalFormat, GLenum format, GLenum type);
             void swap();
 
             // SHADERS
