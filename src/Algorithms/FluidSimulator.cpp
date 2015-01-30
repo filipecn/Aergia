@@ -187,6 +187,7 @@ void FluidSimulator::step() {
     advectShader.end();
 
     swap();
+
     curStep++;
 }
 
