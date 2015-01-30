@@ -186,6 +186,12 @@ void FluidSimulator::step() {
         glDrawArrays( GL_TRIANGLES, 0, 3 );
     advectShader.end();
 
+
+
+
+
+
+
     swap();
 
     curStep++;
