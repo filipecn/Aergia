@@ -33,8 +33,11 @@ using namespace std;
 
 FluidSimulator::FluidSimulator(){
     curStep = 0;
+    density = 1;
     SRC = 0;
     DST = 1;
+
+    gravity = vec2(0.0,-10.0);
 }
 
 FluidSimulator::~FluidSimulator(){
@@ -141,8 +144,12 @@ bool FluidSimulator::init(vec2 gridSize, float dx, float dt) {
     grids[V].m = 1;
 
     generateGrid(Q, vec2(gridSize.x,gridSize.y), GL_R16F, GL_RED, GL_FLOAT);
-    grids[Q].offset = vec2(-cellSize/2.0,0.0);
+    grids[Q].offset = vec2(0.0);
     grids[Q].m = 2;
+
+    generateGrid(D, vec2(gridSize.x,gridSize.y), GL_R16F, GL_RED, GL_FLOAT);
+    grids[D].offset = vec2(0.0);
+    grids[D].m = 3;
 
     advectShader.loadFiles("advect", "shaders");
 
@@ -158,6 +165,20 @@ bool FluidSimulator::init(vec2 gridSize, float dx, float dt) {
     advectShader.setUniform("dt", timeStep);
     advectShader.setUniform("dx", cellSize);
 
+    forcesShader.loadFiles("forces", "shaders");
+
+    forcesShader.setUniform("q", 0);
+    forcesShader.setUniform("dt", timeStep);
+
+    divergenceShader.loadFiles("divergence", "shaders");
+
+    divergenceShader.setUniform("u.m", 0);
+    divergenceShader.setUniform("u.size", grids[U].size);
+    divergenceShader.setUniform("v.m", 1);
+    divergenceShader.setUniform("v.size", grids[V].size);
+    divergenceShader.setUniform("s", density/(cellSize*timeStep));
+
+
     texShader.loadFiles("screenTexture", "shaders");
     texShader.setUniform("tex", 0);
 
@@ -167,34 +188,78 @@ bool FluidSimulator::init(vec2 gridSize, float dx, float dt) {
 }
 
 void FluidSimulator::step() {
-    //return;
-    glViewport(0, 0, (GLsizei) gridSize.x, (GLsizei) gridSize.y);
+    static int k = 0;
+    if(k++ > 0)
+        return;
+
+    advect(Q);
+    //advect(V);
+    //advect(U);
+
+    //addForces(V, gravity.y);
+
+    divergence();
+    printGrid(grids[U].t[SRC], grids[U].size);
+    printGrid(grids[V].t[SRC], grids[V].size);
+    printGrid(grids[D].t[DST], grids[D].size);
+    swap();
+
+    curStep++;
+}
+
+void FluidSimulator::advect(int g){
+    glViewport(0, 0, (GLsizei) grids[g].size.x, (GLsizei) grids[g].size.y);
 
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-            grids[Q].t[DST], 0);
+            grids[g].t[DST], 0);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, grids[U].t[SRC]);
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, grids[V].t[SRC]);
     glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, grids[Q].t[SRC]);
+    glBindTexture(GL_TEXTURE_2D, grids[g].t[SRC]);
 
     advectShader.begin();
         glDrawArrays( GL_TRIANGLES, 0, 3 );
     advectShader.end();
+}
 
+void FluidSimulator::addForces(int g, float f) {
+    glViewport(0, 0, (GLsizei) grids[g].size.x, (GLsizei) grids[g].size.y);
 
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+            grids[g].t[DST], 0);
 
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, grids[g].t[SRC]);
 
+    forcesShader.begin();
+    forcesShader.setUniform("f", f);
+        glDrawArrays( GL_TRIANGLES, 0, 3 );
+    forcesShader.end();
+}
 
+void FluidSimulator::divergence() {
+    glViewport(0, 0, (GLsizei) grids[D].size.x, (GLsizei) grids[D].size.y);
 
-    swap();
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
-    curStep++;
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+            grids[D].t[DST], 0);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, grids[U].t[SRC]);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, grids[V].t[SRC]);
+
+    divergenceShader.begin();
+        glDrawArrays( GL_TRIANGLES, 0, 3 );
+    divergenceShader.end();
 }
 
 void FluidSimulator::render(){

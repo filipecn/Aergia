@@ -46,7 +46,7 @@ namespace aergia {
     namespace algorithms {
 
         enum cellTypes {FLUID = 0, AIR, SOLID};
-        enum gridTypes {U = 0, V, P, Q, GRIDTYPESSIZE};
+        enum gridTypes {U = 0, V, P, D, Q, GRIDTYPESSIZE};
 
         struct Grid {
             vec2 offset;
@@ -81,6 +81,8 @@ namespace aergia {
 
             float timeStep;
             float cellSize;
+            float density;
+            vec2 gravity;
 
             void generateGrid(int G, vec2 size, GLint internalFormat, GLenum format, GLenum type);
             void swap();
@@ -89,6 +91,13 @@ namespace aergia {
             Shader texShader;
             Shader simpleShader;
             Shader advectShader;
+            Shader forcesShader;
+            Shader divergenceShader;
+
+            // SIMULATION
+            void advect(int g);
+            void addForces(int g, float f);
+            void divergence();
 
             void printGrid(GLuint grid, vec2 size);
         };
