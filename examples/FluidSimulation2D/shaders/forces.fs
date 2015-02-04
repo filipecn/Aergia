@@ -8,5 +8,6 @@ uniform float dt;
 uniform float f;
 
 void main() {
-    outColor = texture(q, texCoord).r + dt*f;
+    outColor = texture(q, texCoord).r +
+                    (alpha*s - beta*(texture(t,tedfs) - Tamb))*f;
 }

@@ -37,6 +37,12 @@ FluidSimulator::FluidSimulator(){
     SRC = 0;
     DST = 1;
 
+    rs = 1;
+    rt = 1;
+    ks = 1;
+    kt = 1;
+    Tamb = 273;
+
     gravity = vec2(0.0,-10.0);
 }
 
@@ -95,10 +101,10 @@ void FluidSimulator::generateGrid(int G, vec2 size, GLint internalFormat, GLenum
     grids[G].type = type;
 }
 
-void FluidSimulator::swap(){
-    int tmp = SRC;
-    SRC = DST;
-    DST = tmp;
+void FluidSimulator::swap(int g) {
+    GLuint tmp = grids[g].t[0];
+    grids[g].t[0] = grids[g].t[1];
+    grids[g].t[1] = tmp;
 }
 
 void FluidSimulator::printGrid(GLuint grid, vec2 size){
@@ -135,49 +141,82 @@ bool FluidSimulator::init(vec2 gridSize, float dx, float dt) {
     this->cellSize = dx;
     this->timeStep = dt;
 
-    generateGrid(U, vec2(gridSize.x+1,gridSize.y), GL_R16F, GL_RED, GL_FLOAT);
+    generateGrid(U, vec2(gridSize.x+1,gridSize.y), GL_R32F, GL_RED, GL_FLOAT);
     grids[U].offset = vec2(-cellSize/2.0,0.0);
     grids[U].m = 0;
 
-    generateGrid(V, vec2(gridSize.x,gridSize.y+1), GL_R16F, GL_RED, GL_FLOAT);
+    generateGrid(V, vec2(gridSize.x,gridSize.y+1), GL_R32F, GL_RED, GL_FLOAT);
     grids[V].offset = vec2(-cellSize/2.0,0.0);
     grids[V].m = 1;
 
-    generateGrid(Q, vec2(gridSize.x,gridSize.y), GL_R16F, GL_RED, GL_FLOAT);
+    generateGrid(Q, vec2(gridSize.x,gridSize.y), GL_R32F, GL_RED, GL_FLOAT);
     grids[Q].offset = vec2(0.0);
     grids[Q].m = 2;
 
-    generateGrid(D, vec2(gridSize.x,gridSize.y), GL_R16F, GL_RED, GL_FLOAT);
+    generateGrid(S, vec2(gridSize.x,gridSize.y), GL_R32F, GL_RED, GL_FLOAT);
+    grids[S].offset = vec2(0.0);
+    grids[S].m = 2;
+
+    generateGrid(T, vec2(gridSize.x,gridSize.y), GL_R32F, GL_RED, GL_FLOAT);
+    grids[T].offset = vec2(0.0);
+    grids[T].m = 2;
+
+    generateGrid(H, vec2(gridSize.x,gridSize.y), GL_R32F, GL_RED, GL_FLOAT);
+    grids[H].offset = vec2(0.0);
+    grids[H].m = 2;
+
+    generateGrid(D, vec2(gridSize.x,gridSize.y), GL_R32F, GL_RED, GL_FLOAT);
     grids[D].offset = vec2(0.0);
     grids[D].m = 3;
 
-    advectShader.loadFiles("advect", "shaders");
+    generateGrid(P, vec2(gridSize.x,gridSize.y), GL_R32F, GL_RED, GL_FLOAT);
+    grids[P].offset = vec2(0.0);
+    grids[P].m = 3;
 
+    advectShader.loadFiles("advect", "shaders");
     advectShader.setUniform("u.m", 0);
     advectShader.setUniform("u.offset", grids[U].offset);
-
     advectShader.setUniform("v.m", 1);
     advectShader.setUniform("v.offset", grids[V].offset);
-
     advectShader.setUniform("q.m", 2);
     advectShader.setUniform("q.offset", grids[Q].offset);
-
     advectShader.setUniform("dt", timeStep);
     advectShader.setUniform("dx", cellSize);
 
-    forcesShader.loadFiles("forces", "shaders");
+    heatShader.loadFiles("heat", "shaders");
+    heatShader.setUniform("t", 0);
+    heatShader.setUniform("h", 1);
+    heatShader.setUniform("s", (1 - exp(-rt*timeStep)));
+    heatShader.setUniform("Tamb", Tamb);
 
+    smokeShader.loadFiles("smoke", "shaders");
+    smokeShader.setUniform("d", 0);
+    smokeShader.setUniform("s", 1);
+    smokeShader.setUniform("c", rs*timeStep);
+
+    forcesShader.loadFiles("forces", "shaders");
     forcesShader.setUniform("q", 0);
     forcesShader.setUniform("dt", timeStep);
 
     divergenceShader.loadFiles("divergence", "shaders");
-
     divergenceShader.setUniform("u.m", 0);
     divergenceShader.setUniform("u.size", grids[U].size);
     divergenceShader.setUniform("v.m", 1);
     divergenceShader.setUniform("v.size", grids[V].size);
     divergenceShader.setUniform("s", density/(cellSize*timeStep));
 
+    jacobiShader.loadFiles("jacobi", "shaders");
+    jacobiShader.setUniform("x.m", 0);
+    jacobiShader.setUniform("x.size", grids[P].size);
+    jacobiShader.setUniform("b.m", 1);
+    jacobiShader.setUniform("b.size", grids[D].size);
+    jacobiShader.setUniform("alpha", -cellSize*cellSize);
+    jacobiShader.setUniform("beta", (float)(1.0/4.0));
+
+    gradientShader.loadFiles("gradient", "shaders");
+    gradientShader.setUniform("p.m", 0);
+    gradientShader.setUniform("p.size", grids[P].size);
+    gradientShader.setUniform("s", timeStep/(density*cellSize));
 
     texShader.loadFiles("screenTexture", "shaders");
     texShader.setUniform("tex", 0);
@@ -192,22 +231,36 @@ void FluidSimulator::step() {
     if(k++ > 0)
         return;
 
-    advect(Q);
-    //advect(V);
-    //advect(U);
+    advect(V); swap(V);
+    advect(U); swap(U);
+    advect(Q); swap(Q);
 
-    //addForces(V, gravity.y);
+    addHeat(); swap(T);
+    addDensity();
+    printGrid(grids[T].t[SRC], grids[T].size);
+    //addForces(V, gravity.y); swap(V);
 
     divergence();
-    printGrid(grids[U].t[SRC], grids[U].size);
-    printGrid(grids[V].t[SRC], grids[V].size);
-    printGrid(grids[D].t[DST], grids[D].size);
-    swap();
+
+    //printGrid(grids[D].t[0], grids[D].size);
+
+    //printGrid(grids[D].t[SRC], grids[D].size);
+
+    for (int i = 0; i < jacobiIterations; ++i) {
+        runJacobi(P);
+        swap(P);
+    }
+    //printGrid(grids[P].t[SRC], grids[P].size);
+
+    gradient(U, vec2(1,0)); swap(U);
+    gradient(V, vec2(0,1)); swap(V);
+
+    //printGrid(grids[U].t[SRC], grids[U].size);
 
     curStep++;
 }
 
-void FluidSimulator::advect(int g){
+void FluidSimulator::advect(int g) {
     glViewport(0, 0, (GLsizei) grids[g].size.x, (GLsizei) grids[g].size.y);
 
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
@@ -244,13 +297,49 @@ void FluidSimulator::addForces(int g, float f) {
     forcesShader.end();
 }
 
+void FluidSimulator::addHeat() {
+    glViewport(0, 0, (GLsizei) grids[T].size.x, (GLsizei) grids[T].size.y);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+            grids[T].t[DST], 0);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, grids[T].t[SRC]);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, grids[H].t[SRC]);
+
+    heatShader.begin();
+        glDrawArrays( GL_TRIANGLES, 0, 3 );
+    heatShader.end();
+}
+
+void FluidSimulator::addDensity() {
+    glViewport(0, 0, (GLsizei) grids[Q].size.x, (GLsizei) grids[Q].size.y);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+            grids[Q].t[DST], 0);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, grids[Q].t[SRC]);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, grids[S].t[SRC]);
+
+    smokeShader.begin();
+        glDrawArrays( GL_TRIANGLES, 0, 3 );
+    smokeShader.end();
+}
+
 void FluidSimulator::divergence() {
     glViewport(0, 0, (GLsizei) grids[D].size.x, (GLsizei) grids[D].size.y);
 
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-            grids[D].t[DST], 0);
+            grids[D].t[0], 0);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, grids[U].t[SRC]);
@@ -260,6 +349,45 @@ void FluidSimulator::divergence() {
     divergenceShader.begin();
         glDrawArrays( GL_TRIANGLES, 0, 3 );
     divergenceShader.end();
+}
+
+void FluidSimulator::runJacobi(int g){
+    glViewport(0, 0, (GLsizei) grids[g].size.x, (GLsizei) grids[g].size.y);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+            grids[g].t[DST], 0);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, grids[g].t[SRC]);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, grids[D].t[0]);
+
+    jacobiShader.begin();
+        glDrawArrays( GL_TRIANGLES, 0, 3 );
+    jacobiShader.end();
+}
+
+void FluidSimulator::gradient(int g, vec2 delta) {
+    glViewport(0, 0, (GLsizei) grids[g].size.x, (GLsizei) grids[g].size.y);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+            grids[g].t[DST], 0);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, grids[P].t[SRC]);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, grids[g].t[SRC]);
+
+    gradientShader.begin();
+    gradientShader.setUniform("c.m", 1);
+    gradientShader.setUniform("c.size", grids[g].size);
+    gradientShader.setUniform("delta", delta);
+        glDrawArrays( GL_TRIANGLES, 0, 3 );
+    gradientShader.end();
 }
 
 void FluidSimulator::render(){
@@ -300,8 +428,14 @@ void FluidSimulator::setGrid(int i, const GLvoid *data) {
     glBindTexture(GL_TEXTURE_2D, texture);
 
     texShader.begin();
-    glDrawArrays( GL_TRIANGLES, 0, 3 );
+        glDrawArrays( GL_TRIANGLES, 0, 3 );
     texShader.end();
+
+    cout << "setting matrix\n";
+    printGrid(grids[i].t[SRC], grids[i].size);
 
     CHECK_GL_ERRORS;
 }
+
+
+

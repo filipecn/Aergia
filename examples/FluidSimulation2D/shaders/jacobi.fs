@@ -4,39 +4,32 @@ in vec2 texCoord;
 out float outColor;
 
 struct grid {
-    vec2 offset;
+    vec2 size;
     sampler2D m;
 };
 
-uniform grid u;
-uniform grid v;
-uniform grid q;
-uniform float dx;
-uniform float dt;
+uniform grid x;
+uniform grid b;
+uniform float alpha;
+uniform float beta;
 
-vec2 worldCoordinates(grid g, vec2 c){
-    return c*dx + g.offset;
-}
-
-vec2 textureCoordinates(grid g, vec2 w){
-    return (w - g.offset)/dx;
+vec2 uvCoord(ivec2 coord, grid g){
+    float S = (coord.x/g.size.x) + (1.0/(2.0*g.size.x));
+    float T = (coord.y/g.size.y) + (1.0/(2.0*g.size.y));
+    return vec2(S,T);
 }
 
 void main() {
-    vec2 w = worldCoordinates(q, texCoord);
-    vec2 pos = w - dt * dx * vec2(texture(u.m, texCoord).r,texture(v.m, texCoord).r);
+    ivec2 coord = ivec2(texCoord.s * b.size.x, texCoord.t * b.size.y);
 
-     half4 xL = h4texRECT(x, coords - half2(1, 0));
-     half4 xR = h4texRECT(x, coords + half2(1, 0));
-     half4 xB = h4texRECT(x, coords - half2(0, 1));
-     half4 xT = h4texRECT(x, coords + half2(0, 1));
+    ivec2 xL = ivec2(coord - ivec2(1,0));
+    ivec2 xR = ivec2(coord + ivec2(1,0));
+    ivec2 xB = ivec2(coord - ivec2(0,1));
+    ivec2 xT = ivec2(coord + ivec2(0,1));
 
-      // b sample, from center
-
-       half4 bC = h4texRECT(b, coords);
-
-      // evaluate Jacobi iteration
-      xNew = (xL + xR + xB + xT + alpha * bC) * rBeta;
-
-    outColor = texture(q.m, textureCoordinates(q, pos)).r;
+    outColor = (    texture(x.m, uvCoord(xL, x)).r +
+                    texture(x.m, uvCoord(xR, x)).r +
+                    texture(x.m, uvCoord(xB, x)).r +
+                    texture(x.m, uvCoord(xT, x)).r +
+                    alpha * texture(b.m, texCoord).r ) * beta;
 }

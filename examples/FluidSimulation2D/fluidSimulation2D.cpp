@@ -21,44 +21,15 @@ using namespace std;
 GraphicsDisplay* gd;
 FluidSimulator s;
 
-int width = 50;
-int height = 50;
+int width = 10;
+int height = 10;
 
 void init(){
 
-    s.init(vec2(width,height), 0.1, 0.001);
+    s.init(vec2(width,height), 0.1, 0.0001);
+    s.jacobiIterations = 80;
 
-    // INITIATE U
-    {
-        int w = width+1, h = height;
-        GLfloat iuImg[w*h];
-
-        for (int i = 0; i < h; ++i) {
-            for (int j = 0; j < w; ++j) {
-                if(i >= 10 && i <= 40 && j >= 10 & j <= 40)
-                    iuImg[i*w + j] = 0.5;
-                else iuImg[i*w + j] = 0.0;
-            }
-        }
-
-        s.setGrid(gridTypes::U, iuImg);
-    }
-
-    // INITIATE V
-    {
-        int w = width, h = height+1;
-        GLfloat iuImg[w*h];
-
-        for (int i = 0; i < h; ++i) {
-            for (int j = 0; j < w; ++j) {
-                if(i >= 10 && i <= 40 && j >= 10 & j <= 40)
-                    iuImg[i*w + j] = 0.5;
-                else iuImg[i*w + j] = 0.0;
-            }
-        }
-
-        s.setGrid(gridTypes::V, iuImg);
-    }
+    int l = (int) (width*0.2), r = (int) (width*0.4);
 
     // INITIATE Q
     {
@@ -67,7 +38,7 @@ void init(){
 
         for (int i = 0; i < h; ++i) {
             for (int j = 0; j < w; ++j) {
-                if(i >= 10 && i <= 40 && j >= 10 & j <= 40)
+                if(i >= l && i <= r && j >= l & j <= r)
                     iuImg[i*w + j] = 1;
                 else iuImg[i*w + j] = 0.0;
             }
@@ -75,6 +46,34 @@ void init(){
 
         s.setGrid(gridTypes::Q, iuImg);
     }
+
+    // INITIATE T
+    {
+        int w = width, h = height;
+        GLfloat iuImg[w*h];
+
+        for (int i = 0; i < h; ++i) {
+            for (int j = 0; j < w; ++j) {
+                iuImg[i*w + j] = 273;
+            }
+        }
+
+        s.setGrid(gridTypes::T, iuImg);
+    }
+    // INITIATE H
+    {
+        int w = width, h = height;
+        GLfloat iuImg[w*h];
+
+        for (int i = 0; i < h; ++i) {
+            for (int j = 0; j < w; ++j) {
+                iuImg[i*w + j] = 273;
+            }
+        }
+
+        s.setGrid(gridTypes::H, iuImg);
+    }
+
 }
 
 void render(){
@@ -88,7 +87,7 @@ void mouseButton(int button, int action){
 
 int main(void){
 
-    gd = GraphicsDisplay::create(width, height, std::string("PTG"));
+    gd = GraphicsDisplay::create(width, height, std::string("Smoke2D"));
     gd->registerRenderFunc(render);
     gd->registerButtonFunc(mouseButton);
     init();

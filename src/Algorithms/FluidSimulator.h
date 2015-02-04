@@ -46,7 +46,7 @@ namespace aergia {
     namespace algorithms {
 
         enum cellTypes {FLUID = 0, AIR, SOLID};
-        enum gridTypes {U = 0, V, P, D, Q, GRIDTYPESSIZE};
+        enum gridTypes {U = 0, V, P, D, Q, S, T, H, GRIDTYPESSIZE};
 
         struct Grid {
             vec2 offset;
@@ -72,6 +72,8 @@ namespace aergia {
 
             vec2 gridSize;
 
+            int jacobiIterations;
+
         protected:
             GLuint fbo, junkVAO;
             int SRC, DST;
@@ -83,9 +85,12 @@ namespace aergia {
             float cellSize;
             float density;
             vec2 gravity;
+            float Tamb;
+            float rt, rs;
+            float ks, kt;
 
             void generateGrid(int G, vec2 size, GLint internalFormat, GLenum format, GLenum type);
-            void swap();
+            void swap(int g);
 
             // SHADERS
             Shader texShader;
@@ -93,11 +98,19 @@ namespace aergia {
             Shader advectShader;
             Shader forcesShader;
             Shader divergenceShader;
+            Shader jacobiShader;
+            Shader gradientShader;
+            Shader heatShader;
+            Shader smokeShader;
 
             // SIMULATION
             void advect(int g);
             void addForces(int g, float f);
+            void addHeat();
+            void addDensity();
             void divergence();
+            void runJacobi(int g);
+            void gradient(int g, vec2 delta);
 
             void printGrid(GLuint grid, vec2 size);
         };
