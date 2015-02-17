@@ -4,6 +4,7 @@ in vec2 texCoord;
 out float outColor;
 
 struct grid {
+    vec2 offset;
     vec2 size;
     sampler2D m;
 };
@@ -14,10 +15,8 @@ uniform grid c;
 uniform float s;
 uniform vec2 delta;
 
-vec2 uvCoord(ivec2 coord, grid g){
-    float S = (coord.x/g.size.x) + (1.0/(2.0*g.size.x));
-    float T = (coord.y/g.size.y) + (1.0/(2.0*g.size.y));
-    return vec2(S,T);
+vec2 uvcoords(grid g, ivec2 iCoord){
+    return vec2((iCoord.x + 0.5)/g.size.x, (iCoord.y + 0.5)/g.size.y);
 }
 
 void main() {
@@ -26,6 +25,6 @@ void main() {
     ivec2 ccoord = ivec2(coord - delta);
 
     outColor = texture(c.m, texCoord) - s*(
-                                            texture(p.m, uvCoord(coord, p)).r -
-                                  texture(p.m, uvCoord(ccoord, p)).r);
+       texture(p.m, uvcoords(p, coord) + vec2(c.offset.x/p.size.x,c.offset.y/p.size.y)).r -
+       texture(p.m, uvcoords(p, ccoord)+ vec2(c.offset.x/p.size.x,c.offset.y/p.size.y)).r);
 }

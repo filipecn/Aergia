@@ -33,5 +33,6 @@
 #include "MCTables.h"
 #include "MarchingCubes.h"
 #include "FluidSimulator.h"
+#include "TerrainGenerator.h"
 
 #endif

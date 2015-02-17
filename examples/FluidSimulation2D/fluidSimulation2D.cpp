@@ -26,7 +26,7 @@ int height = 10;
 
 void init(){
 
-    s.init(vec2(width,height), 0.1, 0.0001);
+    s.init(vec2(width,height), 0.1, 0.001);
     s.jacobiIterations = 80;
 
     int l = (int) (width*0.2), r = (int) (width*0.4);
@@ -38,8 +38,9 @@ void init(){
 
         for (int i = 0; i < h; ++i) {
             for (int j = 0; j < w; ++j) {
-                if(i >= l && i <= r && j >= l & j <= r)
-                    iuImg[i*w + j] = 1;
+                //if(i >= l && i <= r && j >= l & j <= r)
+                if(i <= 5 && i >= 4)
+                    iuImg[i*w + j] = 1.0;
                 else iuImg[i*w + j] = 0.0;
             }
         }
@@ -65,9 +66,11 @@ void init(){
         int w = width, h = height;
         GLfloat iuImg[w*h];
 
-        for (int i = 0; i < h; ++i) {
-            for (int j = 0; j < w; ++j) {
+        for (int i = h-1; i >= 0; --i) {
+            for (int j = w-1; j >= 0; --j) {
                 iuImg[i*w + j] = 273;
+                //if(i == 0)
+                  //  iuImg[i*w + j] = 500;
             }
         }
 
@@ -77,7 +80,7 @@ void init(){
 }
 
 void render(){
-    s.step();
+    //s.step();
     s.render();
 }
 

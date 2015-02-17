@@ -30,10 +30,6 @@ using namespace aergia::graphics::rendering;
 
 #include <iostream>
 using namespace std;
-#include <GL/gl.h>
-#include <printf.h>
-
-using namespace std;
 
 ShaderManager::ShaderManager(){
 	init();

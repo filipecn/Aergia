@@ -13,23 +13,25 @@ uniform grid b;
 uniform float alpha;
 uniform float beta;
 
-vec2 uvCoord(ivec2 coord, grid g){
-    float S = (coord.x/g.size.x) + (1.0/(2.0*g.size.x));
-    float T = (coord.y/g.size.y) + (1.0/(2.0*g.size.y));
-    return vec2(S,T);
+ivec2 icoords(grid g, vec2 tCoord){
+    return ivec2(tCoord.s * g.size.x, tCoord.t * g.size.y);
+}
+
+vec2 uvcoords(grid g, ivec2 iCoord){
+    return vec2((iCoord.x + 0.5)/g.size.x, (iCoord.y + 0.5)/g.size.y);
 }
 
 void main() {
-    ivec2 coord = ivec2(texCoord.s * b.size.x, texCoord.t * b.size.y);
+    ivec2 coord = icoords(b, texCoord);
 
     ivec2 xL = ivec2(coord - ivec2(1,0));
     ivec2 xR = ivec2(coord + ivec2(1,0));
     ivec2 xB = ivec2(coord - ivec2(0,1));
     ivec2 xT = ivec2(coord + ivec2(0,1));
 
-    outColor = (    texture(x.m, uvCoord(xL, x)).r +
-                    texture(x.m, uvCoord(xR, x)).r +
-                    texture(x.m, uvCoord(xB, x)).r +
-                    texture(x.m, uvCoord(xT, x)).r +
+    outColor = (    texture(x.m, uvcoords(x,xL)).r +
+                    texture(x.m, uvcoords(x,xR)).r +
+                    texture(x.m, uvcoords(x,xB)).r +
+                    texture(x.m, uvcoords(x,xT)).r +
                     alpha * texture(b.m, texCoord).r ) * beta;
 }

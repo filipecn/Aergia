@@ -18,14 +18,16 @@ using glm::vec2;
 using glm::vec3;
 
 GraphicsDisplay* gd;
-FrameBuffer fb;
-Shader densityShader;
-Shader texShader;
+TerrainGenerator tg;
+//FrameBuffer fb;
+//Shader densityShader;
+//Shader texShader;
 
-int width = 500;
-int height = 500;
-int depth = 500;
+int width = 8;
+int height = 8;
+int depth = 8;
 
+/*
 void init(){
     // Save Marching Cubes lookup tables to textures
     unsigned short tableData[256*3];
@@ -53,9 +55,9 @@ void init(){
     }
     Texture vtable("vertTable", 512, triData);
 
-    //densityShader.loadFiles("density", "Shaders");
+    //densityShader.loadFiles("density", "shaders");
 
-    texShader.loadFiles("texture", "Shaders");
+    texShader.loadFiles("texture", "shaders");
 
    // fb = FrameBuffer(vec2(width,height));
 
@@ -88,7 +90,7 @@ void render(){
 
     glViewport(0, 0, width, height);
     glDrawArrays( GL_TRIANGLES, 0, 3 );
-*/
+*/ /*
     // Bind framebuffer with texture
     // glClearColor(RED)
     // glClear(GL_COLOR_BUFFER_BIT)
@@ -207,9 +209,18 @@ void render(){
     //  texShader.end();
     k++;
 }
+*/
+
+void init(){
+    tg.init(vec3(width,height,depth));
+}
+
+void render(){
+    tg.render();
+}
+
 
 int main(void){
-
     gd = GraphicsDisplay::create(width, height, std::string("PTG"));
     gd->registerRenderFunc(render);
 

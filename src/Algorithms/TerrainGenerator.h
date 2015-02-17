@@ -1,5 +1,5 @@
 /*
- * FluidSimulator.h
+ * TerrainGenerator.h
  *
  * The MIT License (MIT)
  *
@@ -27,8 +27,8 @@
 
 #pragma once
 
-#ifndef FLUIDSIMULATOR_H
-#define FLUIDSIMULATOR_H
+#ifndef TERRAINGENERATOR_H
+#define TERRAINGENERATOR_H
 
 #include "OpenGL.h"
 using namespace aergia::gl;
@@ -45,77 +45,42 @@ namespace aergia {
 
     namespace algorithms {
 
-        enum cellTypes {FLUID = 0, AIR, SOLID};
-        enum gridTypes {U = 0, V, P, D, Q, S, T, H, GRIDTYPESSIZE};
+        class TerrainGenerator {
 
-        class FluidSimulator {
             struct Grid {
-                vec2 offset;
                 GLuint m;
-                vec2 size;
-                GLuint t[2];
+                vec3 size;
+                GLuint t;
                 // GL texture parameters
                 GLint internalFormat;
                 GLenum format;
                 GLenum type;
             };
+
         public:
-            FluidSimulator();
+            TerrainGenerator();
 
-            ~FluidSimulator();
+            ~TerrainGenerator();
 
-            bool init(vec2 gridSize, float dx, float dt);
+            bool init(vec3 gridSize);
             void setGrid(int i, const GLvoid* data);
-            void step();
             void render();
 
-            vec2 gridSize;
-
-            int jacobiIterations;
+            vec3 gridSize;
 
         protected:
             GLuint fbo, junkVAO;
-            int SRC, DST;
-            Grid grids[GRIDTYPESSIZE];
+            Grid grids[9];
 
-            int curStep;
+            void generateGrid(int G, vec3 size, GLint internalFormat, GLenum format, GLenum type, float *borderColor);
 
-            float timeStep;
-            float cellSize;
-            float density;
-            vec2 gravity;
-            float bouyance_alpha;
-            float bouyance_beta;
-
-            float Tamb;
-            float rt, rs;
-            float ks, kt;
-
-
-            void generateGrid(int G, vec2 size, GLint internalFormat, GLenum format, GLenum type, float *borderColor);
-            void swap(int g);
+            void simpleNoise(int G);
 
             // SHADERS
             Shader texShader;
-            Shader simpleShader;
-            Shader advectShader;
-            Shader forcesShader;
-            Shader divergenceShader;
-            Shader jacobiShader;
-            Shader gradientShader;
-            Shader heatShader;
-            Shader smokeShader;
+            Shader simpleNoiseShader;
 
-            // SIMULATION
-            void advect(int g);
-            void addForces(int g, float f);
-            void addHeat();
-            void addDensity();
-            void divergence();
-            void runJacobi(int g);
-            void gradient(int g, vec2 delta);
-
-            void printGrid(GLuint grid, vec2 size);
+            void printGrid(GLuint grid, vec3 size);
         };
 
 

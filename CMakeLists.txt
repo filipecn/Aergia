@@ -16,6 +16,8 @@ set(SOURCE_FILES
     src/Algorithms/MarchingCubes.cpp
     src/Algorithms/MarchingCubes.h
     src/Algorithms/MCTables.h
+    src/Algorithms/TerrainGenerator.cpp
+    src/Algorithms/TerrainGenerator.h
     src/Algorithms/FluidSimulator.cpp
     src/Algorithms/FluidSimulator.h
     src/Graphics/Helpers/Grid.cpp

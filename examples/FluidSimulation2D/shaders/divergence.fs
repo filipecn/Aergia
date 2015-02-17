@@ -12,10 +12,8 @@ uniform grid u;
 uniform grid v;
 uniform float s;
 
-vec2 uvCoord(ivec2 coord, grid g){
-    float S = (coord.x/g.size.x) + (1.0/(2.0*g.size.x));
-    float T = (coord.y/g.size.y) + (1.0/(2.0*g.size.y));
-    return vec2(S,T);
+vec2 uvcoords(grid g, ivec2 iCoord){
+    return vec2((iCoord.x + 0.5)/g.size.x, (iCoord.y + 0.5)/g.size.y);
 }
 
 void main() {
@@ -24,8 +22,8 @@ void main() {
     ivec2 ucoord = ivec2(coord + ivec2(1,0));
     ivec2 vcoord = ivec2(coord + ivec2(0,1));
 
-    outColor = -s*( texture(u.m, uvCoord(ucoord, u)).r -
-                    texture(u.m, uvCoord( coord, u)).r +
-                    texture(v.m, uvCoord(vcoord, v)).r -
-                    texture(v.m, uvCoord( coord, v)).r );
+    outColor = -s*( texture(u.m, uvcoords(u, ucoord)).r -
+                    texture(u.m, uvcoords(u,  coord)).r +
+                    texture(v.m, uvcoords(v, vcoord)).r -
+                    texture(v.m, uvcoords(v,  coord)).r );
 }
