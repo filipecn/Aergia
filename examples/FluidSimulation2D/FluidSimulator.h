@@ -27,13 +27,11 @@
 
 #pragma once
 
-#ifndef FLUIDSIMULATOR_H
-#define FLUIDSIMULATOR_H
-
 #include "OpenGL.h"
 using namespace aergia::gl;
 #include <Shader.h>
 using aergia::graphics::rendering::Shader;
+#include "ProceduralTexture.h"
 
 #include <glm/glm.hpp>
 #include <GL/gl.h>
@@ -45,38 +43,28 @@ namespace aergia {
 
     namespace algorithms {
 
-        enum cellTypes {FLUID = 0, AIR, SOLID};
+        enum cellTypes {FLUID = 0, AIR, SOLID, CELLTYPESSIZE};
         enum gridTypes {U = 0, V, P, D, Q, S, T, H, GRIDTYPESSIZE};
 
         class FluidSimulator {
-            struct Grid {
-                vec2 offset;
-                GLuint m;
-                vec2 size;
-                GLuint t[2];
-                // GL texture parameters
-                GLint internalFormat;
-                GLenum format;
-                GLenum type;
-            };
+
         public:
             FluidSimulator();
 
             ~FluidSimulator();
 
-            bool init(vec2 gridSize, float dx, float dt);
+           /* bool init(vec2 gridSize, float dx, float dt);
             void setGrid(int i, const GLvoid* data);
             void step();
             void render();
-
+*/
             vec2 gridSize;
 
             int jacobiIterations;
 
         protected:
             GLuint fbo, junkVAO;
-            int SRC, DST;
-            Grid grids[GRIDTYPESSIZE];
+            ProceduralTexture grids[GRIDTYPESSIZE];
 
             int curStep;
 
@@ -91,10 +79,6 @@ namespace aergia {
             float rt, rs;
             float ks, kt;
 
-
-            void generateGrid(int G, vec2 size, GLint internalFormat, GLenum format, GLenum type, float *borderColor);
-            void swap(int g);
-
             // SHADERS
             Shader texShader;
             Shader simpleShader;
@@ -107,18 +91,16 @@ namespace aergia {
             Shader smokeShader;
 
             // SIMULATION
-            void advect(int g);
+            void advect(int g);/*
             void addForces(int g, float f);
             void addHeat();
             void addDensity();
             void divergence();
             void runJacobi(int g);
-            void gradient(int g, vec2 delta);
+            void gradient(int g, vec2 delta);*/
 
-            void printGrid(GLuint grid, vec2 size);
         };
 
 
     }
 }
-#endif

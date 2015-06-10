@@ -1,5 +1,5 @@
 /*
- * Algorithms.h
+ * ProceduraTexture.h
  *
  * The MIT License (MIT)
  *
@@ -27,11 +27,55 @@
 
 #pragma once
 
-#ifndef ALGORITHMS_H
-#define ALGORITHMS_H
+#ifndef PROCEDURALTEXTURE_H
+#define PROCEDURALTEXTURE_H
 
-#include "MCTables.h"
-#include "MarchingCubes.h"
-#include "TerrainGenerator.h"
+#include <OpenGL.h>
+using namespace aergia::gl;
 
+#include <ostream>
+using std::ostream;
+#include <glm/glm.hpp>
+using glm::vec2;
+using glm::vec3;
+
+namespace aergia {
+
+    namespace io {
+
+        namespace resources {
+
+            class ProceduralTexture {
+            public:
+                ProceduralTexture();
+
+                ProceduralTexture(vec3 size,
+                        GLint internalFormat,
+                        GLenum format,
+                        GLenum type,
+                        float *borderColor);
+
+                ~ProceduralTexture();
+
+                bool init(int framebuffer);
+
+                void setData(const GLvoid *data);
+
+                ostream& operator<<(ostream &out);
+
+            protected:
+                vec3 size;
+                GLuint texture;
+
+                GLuint fbo, junkVAO;
+                float *borderColor;
+
+                // GL texture parameters
+                GLint internalFormat;
+                GLenum format;
+                GLenum type;
+            };
+        }
+    }
+}
 #endif

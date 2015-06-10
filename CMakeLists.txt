@@ -18,8 +18,8 @@ set(SOURCE_FILES
     src/Algorithms/MCTables.h
     src/Algorithms/TerrainGenerator.cpp
     src/Algorithms/TerrainGenerator.h
-    src/Algorithms/FluidSimulator.cpp
-    src/Algorithms/FluidSimulator.h
+    #examples/FluidSimulation2D/FluidSimulator.cpp
+    #examples/FluidSimulation2D/FluidSimulator.h
     src/Graphics/Helpers/Grid.cpp
     src/Graphics/Helpers/Grid.h
     src/Graphics/Helpers/Shapes.cpp
@@ -61,6 +61,8 @@ set(SOURCE_FILES
     src/GUI/GUIManager.h
     src/IO/Resources/FrameBuffer.cpp
     src/IO/Resources/FrameBuffer.h
+    #src/IO/Resources/ProceduralTexture.cpp
+    #src/IO/Resources/ProceduralTexture.h
     src/IO/Resources/Texture.cpp
     src/IO/Resources/Texture.h
     src/IO/Resources/TextureManager.cpp

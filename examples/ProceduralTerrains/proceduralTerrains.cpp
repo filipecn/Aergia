@@ -13,12 +13,15 @@ using aergia::io::resources::FrameBuffer;
 using aergia::gui::Button;
 #include <Algorithms.h>
 using namespace aergia::algorithms;
+#include <ProceduralTexture.h>
+using aergia::io::resources::ProceduralTexture;
 #include <glm/glm.hpp>
 using glm::vec2;
 using glm::vec3;
 
 GraphicsDisplay* gd;
 TerrainGenerator tg;
+ProceduralTexture pt;
 //FrameBuffer fb;
 //Shader densityShader;
 //Shader texShader;

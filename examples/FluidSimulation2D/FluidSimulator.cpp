@@ -34,8 +34,6 @@ using namespace std;
 FluidSimulator::FluidSimulator(){
     curStep = 0;
     density = 0.1;
-    SRC = 0;
-    DST = 1;
 
     rs = 1;
     rt = 1;
@@ -52,94 +50,7 @@ FluidSimulator::FluidSimulator(){
 FluidSimulator::~FluidSimulator(){
 
 }
-
-void FluidSimulator::generateGrid(int G, vec2 size, GLint internalFormat, GLenum format,
-        GLenum type, float *borderColor = NULL){
-
-    for (int i = 0; i < 2; ++i) {
-        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-
-        glGenTextures(1, &grids[G].t[i]);
-        glBindTexture(GL_TEXTURE_2D, grids[G].t[i]);
-        if(borderColor == NULL) {
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        }
-        else {
-            glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-        }
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
 /*
-    switch ((int)size.z) {
-        case 1:
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_R16F, (GLsizei) size.x, (GLsizei) size.y, 0, GL_RED, GL_FLOAT, 0);
-            break;
-        case 2:
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, (GLsizei) size.x, (GLsizei) size.y, 0, GL_RG, GL_HALF_FLOAT, 0);
-            break;
-        case 3:
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, (GLsizei) size.x, (GLsizei) size.y, 0, GL_RGB, GL_HALF_FLOAT, 0);
-            break;
-        case 4:
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, (GLsizei) size.x, (GLsizei) size.y, 0, GL_RGBA, GL_HALF_FLOAT, 0);
-            break;
-    }
-*/
-        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, (GLsizei) size.x, (GLsizei) size.y, 0,
-                format, type, 0);
-
-        CHECK_GL_ERRORS;
-
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, grids[G].t[i], 0);
-
-        CHECK_GL_ERRORS;
-        CHECK_FRAMEBUFFER;
-
-        glClearColor(0, 0, 0, 0);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    }
-
-    grids[G].size = size;
-    grids[G].internalFormat = internalFormat;
-    grids[G].format = format;
-    grids[G].type = type;
-}
-
-void FluidSimulator::swap(int g) {
-    GLuint tmp = grids[g].t[0];
-    grids[g].t[0] = grids[g].t[1];
-    grids[g].t[1] = tmp;
-}
-
-void FluidSimulator::printGrid(GLuint grid, vec2 size){
-    float * data = new float[(int)(size.x*size.y)];
-    for(int i((int)size.y-1); i >= 0; --i) {
-        for(int j(0); j < (int)size.x; ++j) {
-            data[i * (int)size.x + j] = 0.0f;
-        }
-    }
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, grid);
-    glGetTexImage(GL_TEXTURE_2D, 0, GL_RED, GL_FLOAT, data);
-
-    CHECK_GL_ERRORS;
-
-    cout << "printing grid:\n";
-    for(int i((int)size.y-1); i >= 0; --i) {
-        for(int j(0); j < (int)size.x; ++j) {
-            cout << data[i * (int)size.x + j] << ",";
-        }
-        cout << endl;
-    }
-}
-
 bool FluidSimulator::init(vec2 gridSize, float dx, float dt) {
 
     glGenVertexArrays(1, &junkVAO);
@@ -313,7 +224,7 @@ void FluidSimulator::advect(int g) {
         glDrawArrays( GL_TRIANGLES, 0, 3 );
     advectShader.end();
 }
-
+/*
 void FluidSimulator::addForces(int g, float f) {
     glViewport(0, 0, (GLsizei) grids[g].size.x, (GLsizei) grids[g].size.y);
 
@@ -474,4 +385,4 @@ void FluidSimulator::setGrid(int i, const GLvoid *data) {
     printGrid(grids[i].t[SRC], grids[i].size);
 
     CHECK_GL_ERRORS;
-}
+}*/
