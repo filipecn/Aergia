@@ -13,26 +13,23 @@ uniform grid q;
 uniform grid t;
 uniform grid s;
 
-ivec2 icoords(grid g, vec2 tCoord){
-    return ivec2(tCoord.s * g.size.x, tCoord.t * g.size.y);
-}
-
-vec2 uvcoords(grid g, ivec2 iCoord){
-    return vec2((iCoord.x + 0.5)/g.size.x, (iCoord.y + 0.5)/g.size.y);
-}
-
+uniform float dx;
 uniform float dt;
 uniform float f;
 uniform float alpha;
 uniform float beta;
 uniform float Tamb;
 
+vec2 uv_w(grid g, vec2 uv){
+    return (uv*g.size - vec2(0.5) + g.offset)*vec2(dx);
+}
+
+vec2 w_uv(grid g, vec2 w){
+    return (w - g.offset*vec2(dx) + vec2(dx*0.5))/(g.size*vec2(dx));
+}
+
 void main() {
-
-    ivec2 coord = icoords(q, texCoord);
-    vec2 uv = uvcoords(t, coord);
-    uv +=  vec2(q.offset.x/t.size.x,q.offset.y/t.size.y);
-
-    outColor = texture(q.m, texCoord).r +
-                    dt*(alpha*texture(s.m,uv).r - beta*(texture(t.m,uv).r - Tamb))*f;
+    vec2 uv = uv_w(q, texCoord);
+    outColor = texture(q.m, texCoord).r + 
+        dt*(alpha*texture(s.m, w_uv(s, uv)).r - beta*(texture(t.m, w_uv(t, uv)).r - Tamb))*f;
 }

@@ -28,15 +28,16 @@ GraphicsDisplay* gd;
 SmokeSimulator s;
 
 
-int width = 500;
-int height = 500;
+int width = 128;
+int height = 256;
 
 void init(){
 
     s.init(ivec2(width,height), 0.1, 0.001);
     s.jacobiIterations = 80;
 
-    int l = (int) (width*0.2), r = (int) (width*0.4);
+    int low = (int) (height*0.80), top = (int) (height*1.0);
+    int l = (int) (width*0.45), r = (int) (width*0.55);
 
     // INITIATE V
     {
@@ -46,12 +47,12 @@ void init(){
         for (int i = 0; i < h; ++i) {
             for (int j = 0; j < w; ++j) {
                 //if(i >= 400 && i <= 5)
-                iuImg[i*w + j] = -30.0f;
+                iuImg[i*w + j] = -1000.0f;
                 //else iuImg[i*w + j] = 0.0;
             }
         }
         cerr << "SET V\n";
-        s.setGrid(gridTypes::V, iuImg);
+        //s.setGrid(gridTypes::V, iuImg);
     }
 
     // INITIATE Q
@@ -62,7 +63,7 @@ void init(){
         for (int i = 0; i < h; ++i) {
             for (int j = 0; j < w; ++j) {
                 //if(i >= l && i <= r && j >= l & j <= r)
-                if(i <= 5 && i >= 4)
+                if(i <= top && i >= low)
                     iuImg[i*w + j] = 1.0;
                 else iuImg[i*w + j] = 0.0;
             }
@@ -79,7 +80,8 @@ void init(){
         for (int i = 0; i < h; ++i) {
             for (int j = 0; j < w; ++j) {
                 //if(i >= l && i <= r && j >= l & j <= r)
-                if(i <= 500 && i >= 400)
+                if(i <= top && i >= low && j >= l && j <= r)
+                //if(i <= 10 && i >= 7)
                     iuImg[i*w + j] = 1.0;
                 else iuImg[i*w + j] = 0.0;
             }

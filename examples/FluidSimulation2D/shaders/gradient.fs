@@ -16,7 +16,7 @@ uniform float s;
 uniform vec2 delta;
 
 vec2 uvcoords(grid g, ivec2 iCoord){
-    return vec2((iCoord.x + 0.5)/g.size.x, (iCoord.y + 0.5)/g.size.y);
+    return (iCoord + vec2(0.5))/g.size;
 }
 
 void main() {

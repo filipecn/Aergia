@@ -10,13 +10,15 @@ struct grid {
 
 uniform grid u;
 uniform grid v;
+
 uniform float s;
 
 vec2 uvcoords(grid g, ivec2 iCoord){
-    return vec2((iCoord.x + 0.5)/g.size.x, (iCoord.y + 0.5)/g.size.y);
+    return (iCoord + vec2(0.5))/g.size;
 }
 
 void main() {
+    //integer coordinates
     ivec2 coord = ivec2(texCoord.s * v.size.x, texCoord.t * u.size.y);
 
     ivec2 ucoord = ivec2(coord + ivec2(1,0));

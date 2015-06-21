@@ -18,7 +18,7 @@ ivec2 icoords(grid g, vec2 tCoord){
 }
 
 vec2 uvcoords(grid g, ivec2 iCoord){
-    return vec2((iCoord.x + 0.5)/g.size.x, (iCoord.y + 0.5)/g.size.y);
+    return (iCoord + vec2(0.5))/g.size;
 }
 
 void main() {
@@ -34,4 +34,9 @@ void main() {
                     texture(x.m, uvcoords(x,xB)).r +
                     texture(x.m, uvcoords(x,xT)).r +
                     alpha * texture(b.m, texCoord).r ) * beta;
+    outColor = (    texture(x.m, uvcoords(x,xL)).r +
+                                   texture(x.m, uvcoords(x,xR)).r +
+                                   texture(x.m, uvcoords(x,xB)).r +
+                                   texture(x.m, uvcoords(x,xT)).r +
+                                   texture(b.m, texCoord).r ) * beta;
 }
