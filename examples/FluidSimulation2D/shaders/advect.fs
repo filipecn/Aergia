@@ -25,6 +25,6 @@ vec2 w_uv(grid g, vec2 w){
 
 void main() {
     vec2 w = uv_w(q, texCoord);
-    vec2 pos = w - dt*dx*vec2(texture(u.m, w_uv(u, w)).r,texture(v.m, w_uv(v, w)).r);
+    vec2 pos = w - dt*vec2(texture(u.m, w_uv(u, w)).r,texture(v.m, w_uv(v, w)).r);
     outColor = texture(q.m, w_uv(q, pos)).r;
 }

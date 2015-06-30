@@ -17,9 +17,6 @@ using glm::vec3;
 #include <iostream>
 using namespace std;
 
-//#include "FluidSimulator.h"
-//using namespace aergia::algorithms;
-
 #include "ProceduralTexture.h"
 #include "MACGrid.h"
 #include "SmokeSimulator.h"
@@ -55,7 +52,7 @@ void init(){
         //s.setGrid(gridTypes::V, iuImg);
     }
 
-    // INITIATE Q
+    // INITIATE S
     {
         int w = width, h = height;
         GLfloat iuImg[w*h];
