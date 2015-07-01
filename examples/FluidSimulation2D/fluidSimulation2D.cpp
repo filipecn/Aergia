@@ -33,8 +33,24 @@ void init(){
     s.init(ivec2(width,height), 0.1, 0.001);
     s.jacobiIterations = 80;
 
-    int low = (int) (height*0.80), top = (int) (height*1.0);
-    int l = (int) (width*0.45), r = (int) (width*0.55);
+    int low = (int) (height*0.40), top = (int) (height*0.8);
+    int l = (int) (width*0.3), r = (int) (width*0.7);
+
+    // INITIATE C
+    {
+        int w = width, h = height+1;
+        GLfloat iuImg[w*h];
+
+        for (int i = 0; i < h; ++i) {
+            for (int j = 0; j < w; ++j) {
+                if(j > w*0.1 && j < w*0.8)//  && i > h*0.1)
+                    iuImg[i*w + j] = 0.0f;
+                else iuImg[i*w + j] = 1.0;
+            }
+        }
+        cerr << "SET V\n";
+        s.setGrid(gridTypes::C, iuImg);
+    }
 
     // INITIATE V
     {
@@ -59,14 +75,14 @@ void init(){
 
         for (int i = 0; i < h; ++i) {
             for (int j = 0; j < w; ++j) {
-                //if(i >= l && i <= r && j >= l & j <= r)
-                if(i <= top && i >= low)
+                if(j > w*0.45 && j < w*0.55 && i < h*0.8 && i > h*0.75)
+                //if(i < h*0.15 && j > w*0.45 && j < w*0.55)
                     iuImg[i*w + j] = 1.0;
                 else iuImg[i*w + j] = 0.0;
             }
         }
         cerr << "SET S\n";
-        //s.setGrid(gridTypes::S, iuImg);
+        s.setGrid(gridTypes::S, iuImg);
     }
 
     // INITIATE Q
@@ -84,7 +100,7 @@ void init(){
             }
         }
         cerr << "SET Q\n";
-        s.setGrid(gridTypes::Q, iuImg);
+        //s.setGrid(gridTypes::Q, iuImg);
     }
 
     // INITIATE T
@@ -108,8 +124,9 @@ void init(){
         for (int i = h-1; i >= 0; --i) {
             for (int j = w-1; j >= 0; --j) {
                 iuImg[i*w + j] = 273;
-                if(i == 0)
-                    iuImg[i*w + j] = 500;
+                //if(i < h*0.1)
+                //if(i < h*0.15 && j > w*0.45 && j < w*0.55)
+                  //  iuImg[i*w + j] = 300;
             }
         }
         cerr << "SET H\n";

@@ -12,6 +12,7 @@ struct grid {
 uniform grid u;
 uniform grid v;
 uniform grid q;
+uniform grid cellType;
 uniform float dx;
 uniform float dt;
 
@@ -23,8 +24,27 @@ vec2 w_uv(grid g, vec2 w){
     return (w - g.offset*vec2(dx) + vec2(dx*0.5))/(g.size*vec2(dx));
 }
 
+ivec2 uv_grid(grid g, vec2 uv){
+    return ivec2(int(uv/(1.0/g.size)));
+}
+
+ivec2 w_grid(grid g, vec2 w){
+    return uv_grid(g, w_uv(g, w));
+}
+
+float getValue(grid g, vec2 wstart, vec2 wend){
+    // check if end is solid
+    if(texture(cellType.m, w_uv(cellType, wend)).r > 0.0){
+        return 0.0;
+    }
+    return texture(g.m, w_uv(g, wend)).r;
+}
+
 void main() {
-    vec2 w = uv_w(q, texCoord);
-    vec2 pos = w - dt*vec2(texture(u.m, w_uv(u, w)).r,texture(v.m, w_uv(v, w)).r);
-    outColor = texture(q.m, w_uv(q, pos)).r;
+    // start position
+    vec2 wstart = uv_w(q, texCoord);
+    // final position
+    vec2 wend = wstart - dt*vec2(texture(u.m, w_uv(u, wstart)).r,texture(v.m, w_uv(v, wstart)).r);
+
+    outColor = getValue(q, wstart, wend);
 }

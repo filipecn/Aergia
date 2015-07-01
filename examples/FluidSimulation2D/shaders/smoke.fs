@@ -9,5 +9,5 @@ uniform sampler2D s;
 uniform float c;
 
 void main() {
-    outColor = texture(d, texCoord).r + c*texture(s, texCoord).r;
+    outColor = clamp(texture(d, texCoord).r + c*texture(s, texCoord).r, 0.0, 1.0);
 }
