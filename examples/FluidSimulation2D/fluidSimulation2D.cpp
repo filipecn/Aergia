@@ -25,8 +25,8 @@ GraphicsDisplay* gd;
 SmokeSimulator s;
 
 
-int width = 128;
-int height = 256;
+int width = 256;
+int height = 512;
 
 void init(){
 
@@ -43,12 +43,12 @@ void init(){
 
         for (int i = 0; i < h; ++i) {
             for (int j = 0; j < w; ++j) {
-                if(j > w*0.1 && j < w*0.8)//  && i > h*0.1)
+                if(j > w*0.1 && j < w*0.8 && i > h*0.1)// && i < h*0.9)
                     iuImg[i*w + j] = 0.0f;
                 else iuImg[i*w + j] = 1.0;
             }
         }
-        cerr << "SET V\n";
+        cerr << "SET C\n";
         s.setGrid(gridTypes::C, iuImg);
     }
 
@@ -125,8 +125,8 @@ void init(){
             for (int j = w-1; j >= 0; --j) {
                 iuImg[i*w + j] = 273;
                 //if(i < h*0.1)
-                //if(i < h*0.15 && j > w*0.45 && j < w*0.55)
-                  //  iuImg[i*w + j] = 300;
+                if(i < h*0.15 && j > w*0.45 && j < w*0.55)
+                    iuImg[i*w + j] = 350;
             }
         }
         cerr << "SET H\n";

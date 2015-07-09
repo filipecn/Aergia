@@ -44,7 +44,7 @@ void main() {
     // start position
     vec2 wstart = uv_w(q, texCoord);
     // final position
-    vec2 wend = wstart - dt*vec2(texture(u.m, w_uv(u, wstart)).r,texture(v.m, w_uv(v, wstart)).r);
-
+    vec2 wmid = wstart - 0.5*dt*vec2(texture(u.m, w_uv(u, wstart)).r,texture(v.m, w_uv(v, wstart)).r);
+    vec2 wend = wstart - dt*vec2(texture(u.m, w_uv(u, wmid)).r,texture(v.m, w_uv(v, wmid)).r);
     outColor = getValue(q, wstart, wend);
 }
