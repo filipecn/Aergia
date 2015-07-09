@@ -1,15 +1,18 @@
 # Aergia
 ======
 
-Aergia is a Open Source minimalist framework for development of OpenGL based applications.  It follows the philosophy that the user does not have to waste time writing all the basic codes that appear in most applications. 
+Aergia is a Open Source minimalist framework for development of OpenGL based applications.  It follows the philosophy that the user does not have to waste time writing all the basic lines of code that appear in most applications. 
 
 In principle, the framework should allow users to control advanced features of OpenGL, while allowing less experienced users use it.
 
-The basic idea is that you can set up a graphical application with few lines of code without the need to write all those numerous lines that are commonly needed. Write only what is specific to your solution, leave the rest to Aergia .
+The basic idea is that you can set up a graphical application with just few lines of code. Write only what is specific to your solution, leave the rest to Aergia.
 
 
 Version Beta 0.00...001 
+
 Aergia is lazy in its development, it is far from being considered a library. But it is starting to show some basic features!
+
+blog: http://aergia.weebly.com/
 
 ## Compiling Aergia
 
