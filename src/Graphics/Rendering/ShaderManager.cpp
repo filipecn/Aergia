@@ -199,6 +199,9 @@ void ShaderManager::printShaderInfoLog(GLuint shader){
 		glGetShaderInfoLog(shader, infologLength, &charsWritten, infoLog);
 		printf("Shader InfoLog:\n%s\n\n", infoLog);
 		free(infoLog);
+		if(charsWritten){
+			exit(1);
+		}
 	}
     CHECK_GL_ERRORS;
 }

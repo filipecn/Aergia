@@ -24,11 +24,19 @@ using namespace std;
 GraphicsDisplay* gd;
 SmokeSimulator s;
 
+Shader screen;
+int curGrid;
 
 int width = 256;
 int height = 512;
+float maxTemp = 400.0;
 
 void init(){
+    screen.loadFiles("renderScreen", "shaders");
+    screen.setUniform("S",0);
+    screen.setUniform("T",1);
+    screen.setUniform("H",2);
+    screen.setUniform("maxTemp", maxTemp);
 
     s.init(ivec2(width,height), 0.1, 0.001);
     s.jacobiIterations = 80;
@@ -43,7 +51,7 @@ void init(){
 
         for (int i = 0; i < h; ++i) {
             for (int j = 0; j < w; ++j) {
-                if(j > w*0.1 && j < w*0.8 && i > h*0.1)// && i < h*0.9)
+                if(j > w*0.1 && j < w*0.8 && i > h*0.1 && i < h*0.9)
                     iuImg[i*w + j] = 0.0f;
                 else iuImg[i*w + j] = 1.0;
             }
@@ -75,9 +83,10 @@ void init(){
 
         for (int i = 0; i < h; ++i) {
             for (int j = 0; j < w; ++j) {
-                if(j > w*0.45 && j < w*0.55 && i < h*0.8 && i > h*0.75)
+                //if(j > w*0.45 && j < w*0.55 && i < h*0.8 && i > h*0.75)
+                if(i < h*0.15 && i > h*0.1 && j > w*0.45 && j < w*0.55)
                 //if(i < h*0.15 && j > w*0.45 && j < w*0.55)
-                    iuImg[i*w + j] = 1.0;
+                    iuImg[i*w + j] = 0.15;
                 else iuImg[i*w + j] = 0.0;
             }
         }
@@ -125,8 +134,9 @@ void init(){
             for (int j = w-1; j >= 0; --j) {
                 iuImg[i*w + j] = 273;
                 //if(i < h*0.1)
-                if(i < h*0.15 && j > w*0.45 && j < w*0.55)
-                    iuImg[i*w + j] = 350;
+
+                if(i < h*0.15 && i > h*0.1 && j > w*0.45 && j < w*0.55)
+                    iuImg[i*w + j] = maxTemp;
             }
         }
         cerr << "SET H\n";
@@ -136,11 +146,31 @@ void init(){
 
 void render(){
     s.step();
-    s.render();
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, (GLuint) s.getTexture(gridTypes::Q));
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, (GLuint) s.getTexture(gridTypes::T));
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, (GLuint) s.getTexture(gridTypes::H));
+
+    screen.begin();
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+    screen.end();
+    //s.render(curGrid);
 }
 
 void mouseButton(int button, int action){
     s.step();
+}
+
+void keyboard(int key, int action){
+    if(key == GLFW_KEY_Q && action == GLFW_PRESS)
+        gd->stop();
+    if(key == GLFW_KEY_S && action == GLFW_PRESS)
+        curGrid = gridTypes::Q;
+    if(key == GLFW_KEY_T && action == GLFW_PRESS)
+        curGrid = gridTypes::T;
 }
 
 int main(void){
@@ -148,35 +178,9 @@ int main(void){
     gd = GraphicsDisplay::create(width, height, std::string("Smoke2D"));
     gd->registerRenderFunc(render);
     gd->registerButtonFunc(mouseButton);
-
+    gd->registerKeyFunc(keyboard);
     init();
-/*
-    MACGrid mg(ivec2(width+1,height), vec2(-0.5,-0.5));
 
-    ProceduralTexture test(ivec2(width+1,height), GL_R32F, GL_RED, GL_FLOAT);
-    test.init();
-    cout << test << endl;
-
-    {
-        int w = width+1, h = height;
-        GLfloat iuImg[w*h];
-
-        for (int i = h-1; i >= 0; --i) {
-            for (int j = w-1; j >= 0; --j) {
-                iuImg[i*w + j] = 273;
-                if(i == 0)
-                  iuImg[i*w + j] = 500;
-            }
-        }
-
-        test.setData(iuImg);
-    }
-    cout << test << endl;
-    //test.print(1);
-
-    SmokeSimulator sm;
-    sm.init(ivec2(width+1,height),0,0);
-*/
     gd->start();
 
     return 0;
