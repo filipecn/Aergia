@@ -1,4 +1,4 @@
-#version 150 core
+#version 440 core
 
 in vec2 texCoord;
 out float outColor;

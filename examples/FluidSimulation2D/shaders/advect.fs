@@ -1,4 +1,4 @@
-#version 150 core
+#version 440 core
 
 in vec2 texCoord;
 out float outColor;
@@ -46,5 +46,6 @@ void main() {
     // final position
     vec2 wmid = wstart - 0.5*dt*vec2(texture(u.m, w_uv(u, wstart)).r,texture(v.m, w_uv(v, wstart)).r);
     vec2 wend = wstart - dt*vec2(texture(u.m, w_uv(u, wmid)).r,texture(v.m, w_uv(v, wmid)).r);
+    wend = wstart - dt*vec2(texture(u.m, w_uv(u, wstart)).r,texture(v.m, w_uv(v, wstart)).r);
     outColor = getValue(q, wstart, wend);
 }

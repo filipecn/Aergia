@@ -1,4 +1,4 @@
-#version 150
+#version 440
 out vec2 texCoord;
 
 void main()

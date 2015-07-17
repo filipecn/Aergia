@@ -10,8 +10,11 @@
 #include <Aergia.h>
 using aergia::io::GraphicsDisplay;
 
+#include <ctime>
+
 #include <glm/glm.hpp>
 using glm::ivec2;
+using glm::vec2;
 using glm::vec3;
 
 #include <iostream>
@@ -27,7 +30,7 @@ SmokeSimulator s;
 Shader screen;
 int curGrid;
 
-int width = 256;
+int width = 512;
 int height = 512;
 float maxTemp = 400.0;
 
@@ -38,8 +41,13 @@ void init(){
     screen.setUniform("H",2);
     screen.setUniform("maxTemp", maxTemp);
 
+    s.mouse = vec2(0.5,0.5);
+    cerr << "mouse >>>>  " << s.mouse << endl;
+
+
     s.init(ivec2(width,height), 0.1, 0.001);
     s.jacobiIterations = 80;
+
 
     int low = (int) (height*0.40), top = (int) (height*0.8);
     int l = (int) (width*0.3), r = (int) (width*0.7);
@@ -91,7 +99,7 @@ void init(){
             }
         }
         cerr << "SET S\n";
-        s.setGrid(gridTypes::S, iuImg);
+        //s.setGrid(gridTypes::S, iuImg);
     }
 
     // INITIATE Q
@@ -135,8 +143,8 @@ void init(){
                 iuImg[i*w + j] = 273;
                 //if(i < h*0.1)
 
-                if(i < h*0.15 && i > h*0.1 && j > w*0.45 && j < w*0.55)
-                    iuImg[i*w + j] = maxTemp;
+            //    if(i < h*0.15 && i > h*0.1 && j > w*0.45 && j < w*0.55)
+              //      iuImg[i*w + j] = maxTemp;
             }
         }
         cerr << "SET H\n";
@@ -155,9 +163,11 @@ void render(){
     glBindTexture(GL_TEXTURE_2D, (GLuint) s.getTexture(gridTypes::H));
 
     screen.begin();
+    screen.setUniform("mode", curGrid);
+    screen.setUniform("mouse", s.mouse);
+    screen.setUniform("globalTime", s.timeStep*s.curStep);
         glDrawArrays(GL_TRIANGLES, 0, 3);
     screen.end();
-    //s.render(curGrid);
 }
 
 void mouseButton(int button, int action){
@@ -168,9 +178,16 @@ void keyboard(int key, int action){
     if(key == GLFW_KEY_Q && action == GLFW_PRESS)
         gd->stop();
     if(key == GLFW_KEY_S && action == GLFW_PRESS)
-        curGrid = gridTypes::Q;
+        curGrid = 0;//gridTypes::Q;
     if(key == GLFW_KEY_T && action == GLFW_PRESS)
-        curGrid = gridTypes::T;
+        curGrid = 1;//gridTypes::T;
+    if(key == GLFW_KEY_H && action == GLFW_PRESS)
+        curGrid = 2;//gridTypes::H;
+}
+
+void mouse(double x, double y){
+    s.mouse = vec2((float)x/(float)width,(float)(height - y)/(float)height);
+
 }
 
 int main(void){
@@ -179,6 +196,7 @@ int main(void){
     gd->registerRenderFunc(render);
     gd->registerButtonFunc(mouseButton);
     gd->registerKeyFunc(keyboard);
+    gd->registerMouseFunc(mouse);
     init();
 
     gd->start();
